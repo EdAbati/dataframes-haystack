@@ -27,9 +27,10 @@ The dataframe libraries currently supported are:
 ## Installation
 
 ```sh
-# for pandas (  )
+# for pandas (pandas is already included in `haystack-ai`)
 pip install dataframes-haystack
-# or for polars
+
+# for polars
 pip install "dataframes-haystack[polars]"
 ```
 
