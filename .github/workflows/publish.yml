@@ -1,15 +1,9 @@
 name: Publish to PyPI and TestPyPI
 
 on:
-    workflow_run:
-      workflows: [test]
-      types:
-        - completed
     push:
       tags:
         - "[0-9]+.[0-9]+.[0-9]+*"
-      branches:
-        - publish-ci
 
 jobs:
   build:
@@ -42,7 +36,7 @@ jobs:
     - build
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
+      name: pypi
       url: https://pypi.org/p/dataframes-haystack/
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
@@ -55,8 +49,6 @@ jobs:
         path: dist/
     - name: Publish the distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
 
 
   github-release:
