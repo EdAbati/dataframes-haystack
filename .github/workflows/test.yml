@@ -1,4 +1,4 @@
-name: test
+name: Run tests
 
 on:
   push:
@@ -38,5 +38,5 @@ jobs:
     # - name: Run mypy types checking
     #   run: hatch run types:check
 
-    - name: Run tests
+    - name: Run unit tests
       run: hatch run test-cov-all
