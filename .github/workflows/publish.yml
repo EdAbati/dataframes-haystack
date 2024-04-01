@@ -1,6 +1,10 @@
 name: Publish to PyPI and TestPyPI
 
 on:
+    workflow_run:
+      workflows: [test]
+      types:
+        - completed
     push:
       tags:
         - "[0-9]+.[0-9]+.[0-9]+*"
