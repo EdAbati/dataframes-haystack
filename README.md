@@ -16,12 +16,12 @@
 
 ## Description
 
-`dataframes-haystack` is a Python library that allows various dataframe libraries to integrate with [Haystack 2.x](https://docs.haystack.deepset.ai/docs/intro).
+`dataframes-haystack` allows various dataframe libraries to integrate with [Haystack 2.x](https://docs.haystack.deepset.ai/docs/intro).
 
 The library offers custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components that convert data in dataframes into Haystack [`Document`s](https://docs.haystack.deepset.ai/docs/data-classes#document).
 
 The dataframe libraries currently supported are:
-- [Pandas](https://pandas.pydata.org/)
+- [pandas](https://pandas.pydata.org/)
 - [Polars](https://pola.rs)
 
 ## Installation
@@ -37,6 +37,8 @@ pip install "dataframes-haystack[polars]"
 ## Usage
 
 ### Pandas
+
+See [notebook](./notebooks/pandas-example.ipynb) for a complete example.
 
 ```python
 import pandas as pd
@@ -55,10 +57,15 @@ documents = converter.run(df)
 Result:
 ```python
 >>> documents
-{'documents': [Document(id=2eaefcdeb8d31f9f3d543c614233476ff70c0ed5aae609667172786d09588223, content: 'Hello world', meta: {'filename': 'doc1.txt'}), Document(id=bdc99cbfe819356159950dbaffa0521b47ec3ac2ff040604c93fe7798cc71efc, content: 'Hello everyone', meta: {'filename': 'doc2.txt'})]}
+{'documents': [
+    Document(id=0, content: 'Hello world', meta: {'filename': 'doc1.txt'}),
+    Document(id=1, content: 'Hello everyone', meta: {'filename': 'doc2.txt'})
+]}
 ```
 
 ### Polars
+
+See [notebook](./notebooks/polars-example.ipynb) for a complete example.
 
 ```python
 import polars as pl
@@ -77,7 +84,10 @@ documents = converter.run(df)
 Result:
 ```python
 >>> documents
-{'documents': [Document(id=2eaefcdeb8d31f9f3d543c614233476ff70c0ed5aae609667172786d09588223, content: 'Hello world', meta: {'filename': 'doc1.txt'}), Document(id=bdc99cbfe819356159950dbaffa0521b47ec3ac2ff040604c93fe7798cc71efc, content: 'Hello everyone', meta: {'filename': 'doc2.txt'})]}
+{'documents': [
+    Document(id=0, content: 'Hello world', meta: {'filename': 'doc1.txt'}),
+    Document(id=1, content: 'Hello everyone', meta: {'filename': 'doc2.txt'})
+]}
 ```
 
 ## Contributing

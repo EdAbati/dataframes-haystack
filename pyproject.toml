@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "dataframes-haystack"
 dynamic = ["version"]
-description = ''
+description = 'Haystack 2.x custom components to interact with dataframes libraries.'
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
@@ -64,6 +64,14 @@ test-cov-all = [
 
 [[tool.hatch.envs.all.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.docs]
+dependencies = [
+  "notebook",
+  "ipywidgets",
+  # To download the dataset
+  "arxiv~=2.1.0",
+]
 
 
 # Type checking
