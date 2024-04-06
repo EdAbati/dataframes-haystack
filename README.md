@@ -1,22 +1,19 @@
 # Dataframes Haystack
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dataframes-haystack.svg)](https://pypi.org/project/dataframes-haystack)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/dataframes-haystack.svg)](https://pypi.org/project/dataframes-haystack)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/dataframes-haystack?logo=python&logoColor=white)](https://pypi.org/project/dataframes-haystack)
+[![PyPI - License](https://img.shields.io/pypi/l/dataframes-haystack.svg)](https://pypi.org/project/dataframes-haystack)
+
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/EdAbati/dataframes-haystack/main.svg)](https://results.pre-commit.ci/latest/github/EdAbati/dataframes-haystack/main)
 
 -----
 
-**Table of Contents**
-
-- [Description](#📃-description)
-- [Installation](#🛠️-installation)
-- [Usage](#💻-usage)
-- [Contributing](#🤝-contributing)
-- [License](#✍️-license)
-
 ## 📃 Description
 
-`dataframes-haystack` is an extension for [Haystack 2.x](https://docs.haystack.deepset.ai/docs/intro) that enables integration with dataframe libraries.
+`dataframes-haystack` is an extension for [Haystack 2](https://docs.haystack.deepset.ai/docs/intro) that enables integration with dataframe libraries.
 
 The library offers custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components that convert data stored in dataframes into Haystack [`Document`](https://docs.haystack.deepset.ai/docs/data-classes#document) objects.
 
