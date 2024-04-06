@@ -8,12 +8,13 @@ dynamic = ["version"]
 description = "Haystack custom components for your favourite dataframe library."
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = { file = "LICENSE" }
 keywords = ["nlp", "machine-learning", "ai", "haystack", "pandas", "dataframe", "polars", "llm"]
 authors = [
   { name = "Edoardo Abati", email = "29585319+EdAbati@users.noreply.github.com" },
 ]
 classifiers = [
+  "License :: OSI Approved :: MIT License",
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
