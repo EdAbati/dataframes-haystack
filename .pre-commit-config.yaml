@@ -29,3 +29,8 @@ repos:
     rev: 24.3.0
     hooks:
       - id: black
+
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.8.5
+    hooks:
+      - id: nbqa-black

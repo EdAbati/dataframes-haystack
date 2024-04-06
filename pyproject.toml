@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "dataframes-haystack"
 dynamic = ["version"]
-description = 'Haystack 2.x custom components to interact with dataframes libraries.'
+description = "Haystack custom components for your favourite dataframe library."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
@@ -86,10 +86,10 @@ check = "mypy --install-types --non-interactive {args:src/dataframes_haystack te
 # Linting
 [tool.hatch.envs.lint]
 detached = true
-dependencies = ["black>=24.3.0", "ruff>=0.3.4"]
+dependencies = ["black>=24.3.0", "nbqa>=1.8.5", "ruff>=0.3.4"]
 [tool.hatch.envs.lint.scripts]
-style = ["ruff check {args:.}", "black --check --diff {args:.}"]
-fmt = ["black {args:.}", "ruff check --fix {args:.}", "style"]
+style = ["ruff check {args:.}", "black --check --diff {args:.}", "nbqa black --check --diff notebooks/*"]
+fmt = ["black {args:.}", "ruff check --fix {args:.}", "nbqa black notebooks/*", "style"]
 
 [tool.black]
 target-version = ["py38"]
@@ -99,6 +99,7 @@ skip-string-normalization = true
 [tool.ruff]
 target-version = "py38"
 line-length = 120
+extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = [
