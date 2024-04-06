@@ -16,9 +16,9 @@
 
 ## 📃 Description
 
-`dataframes-haystack` allows various dataframe libraries to integrate with [Haystack 2.x](https://docs.haystack.deepset.ai/docs/intro).
+`dataframes-haystack` is an extension for [Haystack 2.x](https://docs.haystack.deepset.ai/docs/intro) that enables integration with dataframe libraries.
 
-The library offers custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components that convert data in dataframes into Haystack [`Document`s](https://docs.haystack.deepset.ai/docs/data-classes#document).
+The library offers custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components that convert data stored in dataframes into Haystack [`Document`](https://docs.haystack.deepset.ai/docs/data-classes#document) objects.
 
 The dataframe libraries currently supported are:
 - [pandas](https://pandas.pydata.org/)
@@ -36,9 +36,10 @@ pip install "dataframes-haystack[polars]"
 
 ## 💻 Usage
 
-### Pandas
+> [!TIP]
+> See the [Example Notebooks](./notebooks) for complete examples.
 
-See [notebook](./notebooks/pandas-example.ipynb) for a complete example.
+### Pandas
 
 ```python
 import pandas as pd
@@ -64,8 +65,6 @@ Result:
 ```
 
 ### Polars
-
-See [notebook](./notebooks/polars-example.ipynb) for a complete example.
 
 ```python
 import polars as pl
