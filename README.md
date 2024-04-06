@@ -8,13 +8,13 @@
 
 **Table of Contents**
 
-- [Description](#description)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Description](#📃-description)
+- [Installation](#🛠️-installation)
+- [Usage](#💻-usage)
+- [Contributing](#🤝-contributing)
+- [License](#✍️-license)
 
-## Description
+## 📃 Description
 
 `dataframes-haystack` allows various dataframe libraries to integrate with [Haystack 2.x](https://docs.haystack.deepset.ai/docs/intro).
 
@@ -24,7 +24,7 @@ The dataframe libraries currently supported are:
 - [pandas](https://pandas.pydata.org/)
 - [Polars](https://pola.rs)
 
-## Installation
+## 🛠️ Installation
 
 ```sh
 # for pandas (pandas is already included in `haystack-ai`)
@@ -34,7 +34,7 @@ pip install dataframes-haystack
 pip install "dataframes-haystack[polars]"
 ```
 
-## Usage
+## 💻 Usage
 
 ### Pandas
 
@@ -90,7 +90,7 @@ Result:
 ]}
 ```
 
-## Contributing
+## 🤝 Contributing
 
 Do you have an idea for a new feature? Did you find a bug that needs fixing?
 
@@ -109,6 +109,6 @@ Requirements: [`hatch`](https://hatch.pypa.io/latest/install/), [`pre-commit`](h
 - Linting and formatting checks: `hatch run lint:fmt`
 - Unit tests: `hatch run test-cov-all`
 
-## License
+## ✍️ License
 
 `dataframes-haystack` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
