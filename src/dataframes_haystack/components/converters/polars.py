@@ -2,12 +2,14 @@ from typing import Any, Dict, List, Optional, Union
 
 from haystack import Document, component, logging
 from haystack.components.converters.utils import normalize_metadata
-from haystack.lazy_imports import LazyImport
+
+try:
+    import polars as pl
+except ImportError as e:
+    msg = "`polars` is not installed. Please run 'pip install \"dataframes-haystack[polars]\"'"
+    raise ImportError(msg) from e
 
 logger = logging.getLogger(__name__)
-
-with LazyImport(message="Run 'pip install \"dataframes-haystack[polars]\"'") as polars_import:
-    import polars as pl
 
 
 @component
