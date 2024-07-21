@@ -1,10 +1,97 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import pandas as pd
 from haystack import Document, component, logging
 from haystack.components.converters.utils import normalize_metadata
 
 logger = logging.getLogger(__name__)
+
+FileFormat = Literal["csv", "fwf", "json", "html", "xml", "excel", "feather", "parquet", "orc", "pickle"]
+
+
+@component
+class FileToPandasConverter:
+    """
+    Converts files to a pandas.DataFrame.
+
+    Usage example:
+    ```python
+    from dataframes_haystack.components.converters.pandas import FileToPandasConverter
+
+    converter = FileToPandasConverter()
+    results = converter.run(files=["file1.csv", "file2.csv"])
+    df = results["dataframe"]
+    print(df.head())
+    ```
+    """
+
+    def __init__(
+        self,
+        file_format: FileFormat = "csv",
+        read_kwargs: Union[Dict[str, Any], None] = None,
+        columns_subset: Union[List[str], None] = None,
+    ):
+        """
+        Create a FileToPandasConverter component.
+
+        Please refer to the pandas documentation for more information on the supported readers and their parameters: https://pandas.pydata.org/docs/user_guide/io.html
+
+        Args:
+            file_format: The format of the files to read. Supported formats are "csv", "fwf", "json", "html", "xml",
+              "excel", "feather", "parquet", "orc", and "pickle".
+            read_kwargs: Optional keyword arguments to pass to the pandas reader function.
+            columns_subset: Optional list of column names to select from the DataFrame after reading the file.
+        """
+        self.file_format = file_format
+        self._reader_function = self._get_read_function()
+        self.read_kwargs = read_kwargs or {}
+        self.columns_subset = columns_subset
+
+    def _get_read_function(self):
+        """Returns the function to read files based on the file format."""
+
+        file_format_mapping = {
+            "csv": pd.read_csv,
+            "fwf": pd.read_fwf,
+            "json": pd.read_json,
+            "html": pd.read_html,
+            "xml": pd.read_xml,
+            "excel": pd.read_excel,
+            "feather": pd.read_feather,
+            "parquet": pd.read_parquet,
+            "orc": pd.read_orc,
+            "pickle": pd.read_pickle,
+            "sql": pd.read_sql,
+            "gbq": pd.read_gbq,
+        }
+        reader_function = file_format_mapping.get(self.file_format)
+        if reader_function:
+            return reader_function
+        msg = f"Unsupported file format: {self.file_format}"
+        raise ValueError(msg)
+
+    def _read_with_select(self, file: str) -> pd.DataFrame:
+        """Reads a file and selects a subset of columns, if provided."""
+        df = self._reader_function(file, **self.read_kwargs)
+        if self.columns_subset:
+            return df[self.columns_subset]
+        return df
+
+    @component.output_types(dataframe=pd.DataFrame)
+    def run(self, files: List[str]) -> Dict[str, pd.DataFrame]:
+        """
+        Converts files to a pandas.DataFrame.
+
+        Args:
+            files: List of file paths.
+
+        Returns:
+            A dictionary with the following keys:
+            - `dataframe`: pandas.DataFrame containing the content of the files.
+        """
+        df_list = [self._read_with_select(file) for file in files]
+        df = pd.concat(df_list, ignore_index=True)
+        return {"dataframe": df}
 
 
 @component

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from haystack import Document, component, logging
 from haystack.components.converters.utils import normalize_metadata
@@ -10,6 +10,89 @@ except ImportError as e:
     raise ImportError(msg) from e
 
 logger = logging.getLogger(__name__)
+
+
+FileFormat = Literal["avro", "csv", "delta", "excel", "ipc", "json", "parquet"]
+
+
+@component
+class FileToPolarsConverter:
+    """
+    Converts files to a polars.DataFrame.
+
+    Usage example:
+    ```python
+    from dataframes_haystack.components.converters.polars import FileToPolarsConverter
+
+    converter = FileToPolarsConverter()
+    results = converter.run(files=["file1.csv", "file2.csv"])
+    df = results["dataframe"]
+    print(df.head())
+    ```
+    """
+
+    def __init__(
+        self,
+        file_format: FileFormat = "csv",
+        read_kwargs: Optional[Dict[str, Any]] = None,
+        columns_subset: Union[List[str], None] = None,
+    ):
+        """
+        Create a FileToPolarsConverter component.
+
+        Please refer to the polars documentation for more information on the supported readers and their parameters: https://docs.pola.rs/api/python/stable/reference/io.html
+
+        Args:
+            file_format: The format of the files to read. Supported formats are "avro", "csv", "delta", "excel", "ipc",
+              "json", and "parquet".
+            read_kwargs: Optional keyword arguments to pass to the polars reader function.
+            columns_subset: Optional list of column names to select from the DataFrame after reading the file.
+        """
+        self.file_format = file_format
+        self._reader_function = self._get_read_function()
+        self.read_kwargs = read_kwargs or {}
+        self.columns_subset = columns_subset
+
+    def _get_read_function(self):
+        """Returns the function to read files based on the file format."""
+
+        file_format_mapping = {
+            "avro": pl.read_avro,
+            "csv": pl.read_csv,
+            "delta": pl.read_delta,
+            "excel": pl.read_excel,
+            "ipc": pl.read_ipc,
+            "json": pl.read_json,
+            "parquet": pl.read_parquet,
+        }
+        reader_function = file_format_mapping.get(self.file_format)
+        if reader_function:
+            return reader_function
+        msg = f"Unsupported file format: {self.file_format}"
+        raise ValueError(msg)
+
+    def _read_with_select(self, file: str) -> pl.DataFrame:
+        """Reads a file and selects only the specified columns."""
+        df = self._reader_function(file, **self.read_kwargs)
+        if self.columns_subset:
+            return df.select(self.columns_subset)
+        return df
+
+    @component.output_types(dataframe=pl.DataFrame)
+    def run(self, files: List[str]):
+        """
+        Converts files to a polars.DataFrame.
+
+        Args:
+            files: List of file paths to read.
+
+        Returns:
+            A dictionary with the following keys:
+            - `dataframe`: The polars.DataFrame created from the files.
+        """
+        df_list = [self._read_with_select(file) for file in files]
+        df = pl.concat(df_list, how="vertical")
+        return {"dataframe": df}
 
 
 @component
