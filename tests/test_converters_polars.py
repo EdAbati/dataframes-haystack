@@ -1,9 +1,12 @@
+from pathlib import Path
 from typing import Any, Dict, List, Union
 
 import polars as pl
 import pytest
+from polars.testing import assert_frame_equal
 
-from dataframes_haystack.components.converters.polars import PolarsDataFrameConverter
+from dataframes_haystack.components.converters.polars import FileToPolarsConverter, PolarsDataFrameConverter
+from tests.utils import assert_pipeline_yaml_equal
 
 
 @pytest.fixture(scope="function")
@@ -105,6 +108,29 @@ def test_polars_dataframe_converter_all_metadata(
     assert [doc.meta for doc in documents] == expected_meta
 
 
+@pytest.mark.parametrize("column_subset", [None, ["content"], ["content", "meta1"]])
+def test_file_to_polars_converter(
+    csv_file_path: Path, polars_dataframe: pl.DataFrame, column_subset: Union[List[str], None]
+):
+    converter = FileToPolarsConverter(columns_subset=column_subset)
+    results = converter.run(files=[str(csv_file_path)])
+    if column_subset:
+        polars_dataframe = polars_dataframe.select(column_subset)
+    assert_frame_equal(results["dataframe"], polars_dataframe)
+
+
+def test_file_to_polars_converter_read_kwargs(csv_file_path: Path, polars_dataframe: pl.DataFrame):
+    cols_to_select = ["content", "meta2"]
+    converter = FileToPolarsConverter(read_kwargs={"columns": cols_to_select})
+    results = converter.run(files=[str(csv_file_path)])
+    assert_frame_equal(results["dataframe"], polars_dataframe.select(cols_to_select))
+
+
+def test_file_to_polars_converter_valueerror():
+    with pytest.raises(ValueError):
+        FileToPolarsConverter(file_format="foo")
+
+
 def test_converter_in_pipeline():
     from textwrap import dedent
 
@@ -112,9 +138,11 @@ def test_converter_in_pipeline():
     from haystack.core.pipeline import Pipeline
 
     pipeline = Pipeline()
+    pipeline.add_component("file_to_polars", FileToPolarsConverter())
     pipeline.add_component("converter", PolarsDataFrameConverter(content_column="content"))
     pipeline.add_component("cleaner", DocumentCleaner())
     pipeline.connect("converter", "cleaner")
+    pipeline.connect("file_to_polars", "converter")
 
     yaml_pipeline = pipeline.dumps()
 
@@ -126,7 +154,16 @@ def test_converter_in_pipeline():
             meta_columns: []
           type: dataframes_haystack.components.converters.polars.PolarsDataFrameConverter
     """
+    file_to_polars_expected_yaml = """\
+      file_to_polars:
+          init_parameters:
+            columns_subset: null
+            file_format: csv
+            read_kwargs: {}
+          type: dataframes_haystack.components.converters.polars.FileToPolarsConverter
+    """
     assert dedent(converter_expected_yaml) in yaml_pipeline
+    assert dedent(file_to_polars_expected_yaml) in yaml_pipeline
 
     new_pipeline = Pipeline.loads(yaml_pipeline)
-    assert yaml_pipeline == new_pipeline.dumps()
+    assert_pipeline_yaml_equal(yaml_pipeline, new_pipeline.dumps())

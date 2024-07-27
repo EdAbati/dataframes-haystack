@@ -6,6 +6,7 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from dataframes_haystack.components.converters.pandas import FileToPandasConverter, PandasDataFrameConverter
+from tests.utils import assert_pipeline_yaml_equal
 
 
 def test_pandas_dataframe_default_converter(pandas_dataframe: pd.DataFrame):
@@ -107,10 +108,9 @@ def test_file_to_pandas_converter(
 ):
     converter = FileToPandasConverter(columns_subset=column_subset)
     results = converter.run(files=[str(csv_file_path)])
-    dataframe = results["dataframe"]
     if column_subset:
         pandas_dataframe = pandas_dataframe[column_subset]
-    assert_frame_equal(dataframe, pandas_dataframe)
+    assert_frame_equal(results["dataframe"], pandas_dataframe)
 
 
 def test_file_to_pandas_converter_read_kwargs(csv_file_path: Path, pandas_dataframe: pd.DataFrame):
@@ -135,6 +135,7 @@ def test_converter_in_pipeline():
     pipeline.add_component("file_to_pandas", FileToPandasConverter())
     pipeline.add_component("converter", PandasDataFrameConverter(content_column="content"))
     pipeline.add_component("cleaner", DocumentCleaner())
+    pipeline.connect("file_to_pandas", "converter")
     pipeline.connect("converter", "cleaner")
 
     yaml_pipeline = pipeline.dumps()
@@ -159,4 +160,4 @@ def test_converter_in_pipeline():
     assert dedent(file_to_pandas_expected_yaml) in yaml_pipeline
 
     new_pipeline = Pipeline.loads(yaml_pipeline)
-    assert yaml_pipeline == new_pipeline.dumps()
+    assert_pipeline_yaml_equal(yaml_pipeline, new_pipeline.dumps())
