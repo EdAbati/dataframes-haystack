@@ -104,7 +104,7 @@ class PolarsDataFrameConverter:
     ```python
     from dataframes_haystack.components.converters.polars import PolarsDataFrameConverter
 
-    converter = PolarsDataFrameToDocument(content_column="text")
+    converter = PolarsDataFrameConverter(content_column="text")
     results = converter.run(dataframe=df)
     documents = results["documents"]
     print(documents[0].content)

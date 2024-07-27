@@ -103,7 +103,7 @@ class PandasDataFrameConverter:
     ```python
     from dataframes_haystack.components.converters.pandas import PandasDataFrameConverter
 
-    converter = PandasDataFrameToDocument(content_column="text")
+    converter = PandasDataFrameConverter(content_column="text")
     results = converter.run(dataframe=df)
     documents = results["documents"]
     print(documents[0].content)
