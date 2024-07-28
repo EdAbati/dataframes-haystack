@@ -71,26 +71,26 @@ class FileToPolarsDataFrame:
         msg = f"Unsupported file format: {self.file_format}"
         raise ValueError(msg)
 
-    def _read_with_select(self, file: str) -> pl.DataFrame:
+    def _read_with_select(self, file_path: str) -> pl.DataFrame:
         """Reads a file and selects only the specified columns."""
-        df = self._reader_function(file, **self.read_kwargs)
+        df = self._reader_function(file_path, **self.read_kwargs)
         if self.columns_subset:
             return df.select(self.columns_subset)
         return df
 
     @component.output_types(dataframe=pl.DataFrame)
-    def run(self, files: List[str]):
+    def run(self, file_paths: List[str]):
         """
         Converts files to a polars.DataFrame.
 
         Args:
-            files: List of file paths to read.
+            file_paths: List of file paths to read.
 
         Returns:
             A dictionary with the following keys:
             - `dataframe`: The polars.DataFrame created from the files.
         """
-        df_list = [self._read_with_select(file) for file in files]
+        df_list = [self._read_with_select(path) for path in file_paths]
         df = pl.concat(df_list, how="vertical")
         return {"dataframe": df}
 

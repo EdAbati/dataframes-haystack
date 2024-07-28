@@ -113,7 +113,7 @@ def test_file_to_polars_converter(
     csv_file_path: Path, polars_dataframe: pl.DataFrame, column_subset: Union[List[str], None]
 ):
     converter = FileToPolarsDataFrame(columns_subset=column_subset)
-    results = converter.run(files=[str(csv_file_path)])
+    results = converter.run(file_paths=[str(csv_file_path)])
     if column_subset:
         polars_dataframe = polars_dataframe.select(column_subset)
     assert_frame_equal(results["dataframe"], polars_dataframe)
@@ -122,7 +122,7 @@ def test_file_to_polars_converter(
 def test_file_to_polars_converter_read_kwargs(csv_file_path: Path, polars_dataframe: pl.DataFrame):
     cols_to_select = ["content", "meta2"]
     converter = FileToPolarsDataFrame(read_kwargs={"columns": cols_to_select})
-    results = converter.run(files=[str(csv_file_path)])
+    results = converter.run(file_paths=[str(csv_file_path)])
     assert_frame_equal(results["dataframe"], polars_dataframe.select(cols_to_select))
 
 

@@ -17,11 +17,13 @@
 
 `dataframes-haystack` is an extension for [Haystack 2](https://docs.haystack.deepset.ai/docs/intro) that enables integration with dataframe libraries.
 
-The library offers custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components that convert data stored in dataframes into Haystack [`Document`](https://docs.haystack.deepset.ai/docs/data-classes#document) objects.
-
 The dataframe libraries currently supported are:
 - [pandas](https://pandas.pydata.org/)
 - [Polars](https://pola.rs)
+
+The library offers various custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components to transform dataframes into Haystack [`Document`](https://docs.haystack.deepset.ai/docs/data-classes#document) objects:
+- `FileToPandasDataFrame` and `FileToPolarsDataFrame` read files and convert them into dataframes.
+- `PandasDataFrameConverter` or `PolarsDataFrameConverter` convert data stored in dataframes into Haystack `Document`objects.
 
 ## 🛠️ Installation
 
@@ -39,6 +41,26 @@ pip install "dataframes-haystack[polars]"
 > See the [Example Notebooks](./notebooks) for complete examples.
 
 ### Pandas
+
+#### FileToPandasDataFrame
+
+```python
+from dataframes_haystack.components.converters.pandas import FileToPandasDataFrame
+
+converter = FileToPandasDataFrame(file_format="csv")
+
+output_dataframe = converter.run(
+    file_paths=["data/doc1.csv", "data/doc2.csv"]
+)
+```
+
+Result:
+```python
+>>> output_dataframe
+{'dataframe': <pandas.DataFrame>}
+```
+
+#### PandasDataFrameConverter
 
 ```python
 import pandas as pd
@@ -64,6 +86,26 @@ Result:
 ```
 
 ### Polars
+
+#### FileToPolarsDataFrame
+
+```python
+from dataframes_haystack.components.converters.polars import FileToPolarsDataFrame
+
+converter = FileToPolarsDataFrame(file_format="csv")
+
+output_dataframe = converter.run(
+    file_paths=["data/doc1.csv", "data/doc2.csv"]
+)
+```
+
+Result:
+```python
+>>> output_dataframe
+{'dataframe': <polars.DataFrame>}
+```
+
+#### PolarsDataFrameConverter
 
 ```python
 import polars as pl
