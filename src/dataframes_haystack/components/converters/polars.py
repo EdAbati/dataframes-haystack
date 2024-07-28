@@ -1,7 +1,12 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from functools import partial
+from typing import Any, Dict, List, Optional, Union
 
+import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
 from haystack.components.converters.utils import normalize_metadata
+
+from dataframes_haystack.components.converters._common import PolarsFileFormat as FileFormat
+from dataframes_haystack.components.converters._common import read_with_select
 
 try:
     import polars as pl
@@ -10,9 +15,6 @@ except ImportError as e:
     raise ImportError(msg) from e
 
 logger = logging.getLogger(__name__)
-
-
-FileFormat = Literal["avro", "csv", "delta", "excel", "ipc", "json", "parquet"]
 
 
 @component
@@ -71,12 +73,10 @@ class FileToPolarsDataFrame:
         msg = f"Unsupported file format: {self.file_format}"
         raise ValueError(msg)
 
-    def _read_with_select(self, file_path: str) -> pl.DataFrame:
+    def _read_with_select(self, file_path: str) -> nw.DataFrame:
         """Reads a file and selects only the specified columns."""
-        df = self._reader_function(file_path, **self.read_kwargs)
-        if self.columns_subset:
-            return df.select(self.columns_subset)
-        return df
+        read_func = partial(self._reader_function, **self.read_kwargs)
+        return read_with_select(read_func, file_path, self.columns_subset)
 
     @component.output_types(dataframe=pl.DataFrame)
     def run(self, file_paths: List[str]):
@@ -91,8 +91,9 @@ class FileToPolarsDataFrame:
             - `dataframe`: The polars.DataFrame created from the files.
         """
         df_list = [self._read_with_select(path) for path in file_paths]
-        df = pl.concat(df_list, how="vertical")
-        return {"dataframe": df}
+        df = nw.concat(df_list, how="vertical")
+        polars_df = nw.to_native(df)
+        return {"dataframe": polars_df}
 
 
 @component

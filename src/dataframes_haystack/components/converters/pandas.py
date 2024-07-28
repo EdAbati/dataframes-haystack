@@ -1,12 +1,15 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from functools import partial
+from typing import Any, Dict, List, Optional, Union
 
+import narwhals.stable.v1 as nw
 import pandas as pd
 from haystack import Document, component, logging
 from haystack.components.converters.utils import normalize_metadata
 
-logger = logging.getLogger(__name__)
+from dataframes_haystack.components.converters._common import PandasFileFormat as FileFormat
+from dataframes_haystack.components.converters._common import read_with_select
 
-FileFormat = Literal["csv", "fwf", "json", "html", "xml", "excel", "feather", "parquet", "orc", "pickle"]
+logger = logging.getLogger(__name__)
 
 
 @component
@@ -70,12 +73,10 @@ class FileToPandasDataFrame:
         msg = f"Unsupported file format: {self.file_format}"
         raise ValueError(msg)
 
-    def _read_with_select(self, file_path: str) -> pd.DataFrame:
+    def _read_with_select(self, file_path: str) -> nw.DataFrame:
         """Reads a file and selects a subset of columns, if provided."""
-        df = self._reader_function(file_path, **self.read_kwargs)
-        if self.columns_subset:
-            return df[self.columns_subset]
-        return df
+        read_func = partial(self._reader_function, **self.read_kwargs)
+        return read_with_select(read_func, file_path, self.columns_subset)
 
     @component.output_types(dataframe=pd.DataFrame)
     def run(self, file_paths: List[str]) -> Dict[str, pd.DataFrame]:
@@ -90,8 +91,9 @@ class FileToPandasDataFrame:
             - `dataframe`: pandas.DataFrame containing the content of the files.
         """
         df_list = [self._read_with_select(path) for path in file_paths]
-        df = pd.concat(df_list, ignore_index=True)
-        return {"dataframe": df}
+        df = nw.concat(df_list, how="vertical")
+        pandas_df = nw.to_native(df)
+        return {"dataframe": pandas_df}
 
 
 @component

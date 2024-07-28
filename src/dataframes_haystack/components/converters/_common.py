@@ -1,17 +1,30 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Union
 
-import narwhals as nw
+import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
 from haystack.components.converters.utils import normalize_metadata
-
-from dataframes_haystack.components.converters.pandas import FileFormat as PandasFileFormat
-from dataframes_haystack.components.converters.polars import FileFormat as PolarsFileFormat
+from narwhals.typing import IntoDataFrame
 
 logger = logging.getLogger(__name__)
+
+PandasFileFormat = Literal["csv", "fwf", "json", "html", "xml", "excel", "feather", "parquet", "orc", "pickle"]
+PolarsFileFormat = Literal["avro", "csv", "delta", "excel", "ipc", "json", "parquet"]
 
 FileFormat = Union[PandasFileFormat, PolarsFileFormat]
 
 Backends = Literal["pandas", "polars"]
+
+ReaderFunc = Callable[..., IntoDataFrame]
+
+
+def read_with_select(
+    reader_function: ReaderFunc, file_path: str, columns_subset: Union[List[str], None] = None
+) -> nw.DataFrame:
+    df = reader_function(file_path)
+    df = nw.from_native(df, eager_only=True)
+    if columns_subset:
+        df = df.select(columns_subset)
+    return df
 
 
 @component
