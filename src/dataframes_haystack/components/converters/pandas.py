@@ -70,26 +70,26 @@ class FileToPandasDataFrame:
         msg = f"Unsupported file format: {self.file_format}"
         raise ValueError(msg)
 
-    def _read_with_select(self, file: str) -> pd.DataFrame:
+    def _read_with_select(self, file_path: str) -> pd.DataFrame:
         """Reads a file and selects a subset of columns, if provided."""
-        df = self._reader_function(file, **self.read_kwargs)
+        df = self._reader_function(file_path, **self.read_kwargs)
         if self.columns_subset:
             return df[self.columns_subset]
         return df
 
     @component.output_types(dataframe=pd.DataFrame)
-    def run(self, files: List[str]) -> Dict[str, pd.DataFrame]:
+    def run(self, file_paths: List[str]) -> Dict[str, pd.DataFrame]:
         """
         Converts files to a pandas.DataFrame.
 
         Args:
-            files: List of file paths.
+            file_paths: List of file paths.
 
         Returns:
             A dictionary with the following keys:
             - `dataframe`: pandas.DataFrame containing the content of the files.
         """
-        df_list = [self._read_with_select(file) for file in files]
+        df_list = [self._read_with_select(path) for path in file_paths]
         df = pd.concat(df_list, ignore_index=True)
         return {"dataframe": df}
 

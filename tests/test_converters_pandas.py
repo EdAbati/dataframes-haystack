@@ -107,7 +107,7 @@ def test_file_to_pandas_converter(
     csv_file_path: Path, pandas_dataframe: pd.DataFrame, column_subset: Union[List[str], None]
 ):
     converter = FileToPandasDataFrame(columns_subset=column_subset)
-    results = converter.run(files=[str(csv_file_path)])
+    results = converter.run(file_paths=[str(csv_file_path)])
     if column_subset:
         pandas_dataframe = pandas_dataframe[column_subset]
     assert_frame_equal(results["dataframe"], pandas_dataframe)
@@ -116,7 +116,7 @@ def test_file_to_pandas_converter(
 def test_file_to_pandas_converter_read_kwargs(csv_file_path: Path, pandas_dataframe: pd.DataFrame):
     cols_to_select = ["content", "meta2"]
     converter = FileToPandasDataFrame(read_kwargs={"usecols": cols_to_select})
-    results = converter.run(files=[str(csv_file_path)])
+    results = converter.run(file_paths=[str(csv_file_path)])
     assert_frame_equal(results["dataframe"], pandas_dataframe[cols_to_select])
 
 
@@ -154,7 +154,7 @@ def test_converter_in_pipeline():
             columns_subset: null
             file_format: csv
             read_kwargs: {}
-          type: dataframes_haystack.components.converters.pandas.FileToPandasConverter
+          type: dataframes_haystack.components.converters.pandas.FileToPandasDataFrame
     """
     assert dedent(converter_expected_yaml) in yaml_pipeline
     assert dedent(file_to_pandas_expected_yaml) in yaml_pipeline
