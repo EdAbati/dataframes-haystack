@@ -5,7 +5,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from dataframes_haystack.components.converters.polars import FileToPolarsConverter, PolarsDataFrameConverter
+from dataframes_haystack.components.converters.polars import FileToPolarsDataFrame, PolarsDataFrameConverter
 from tests.utils import assert_pipeline_yaml_equal
 
 
@@ -112,7 +112,7 @@ def test_polars_dataframe_converter_all_metadata(
 def test_file_to_polars_converter(
     csv_file_path: Path, polars_dataframe: pl.DataFrame, column_subset: Union[List[str], None]
 ):
-    converter = FileToPolarsConverter(columns_subset=column_subset)
+    converter = FileToPolarsDataFrame(columns_subset=column_subset)
     results = converter.run(files=[str(csv_file_path)])
     if column_subset:
         polars_dataframe = polars_dataframe.select(column_subset)
@@ -121,14 +121,14 @@ def test_file_to_polars_converter(
 
 def test_file_to_polars_converter_read_kwargs(csv_file_path: Path, polars_dataframe: pl.DataFrame):
     cols_to_select = ["content", "meta2"]
-    converter = FileToPolarsConverter(read_kwargs={"columns": cols_to_select})
+    converter = FileToPolarsDataFrame(read_kwargs={"columns": cols_to_select})
     results = converter.run(files=[str(csv_file_path)])
     assert_frame_equal(results["dataframe"], polars_dataframe.select(cols_to_select))
 
 
 def test_file_to_polars_converter_valueerror():
     with pytest.raises(ValueError):
-        FileToPolarsConverter(file_format="foo")
+        FileToPolarsDataFrame(file_format="foo")
 
 
 def test_converter_in_pipeline():
@@ -138,7 +138,7 @@ def test_converter_in_pipeline():
     from haystack.core.pipeline import Pipeline
 
     pipeline = Pipeline()
-    pipeline.add_component("file_to_polars", FileToPolarsConverter())
+    pipeline.add_component("file_to_polars", FileToPolarsDataFrame())
     pipeline.add_component("converter", PolarsDataFrameConverter(content_column="content"))
     pipeline.add_component("cleaner", DocumentCleaner())
     pipeline.connect("converter", "cleaner")

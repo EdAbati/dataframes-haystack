@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from dataframes_haystack.components.converters.pandas import FileToPandasConverter, PandasDataFrameConverter
+from dataframes_haystack.components.converters.pandas import FileToPandasDataFrame, PandasDataFrameConverter
 from tests.utils import assert_pipeline_yaml_equal
 
 
@@ -106,7 +106,7 @@ def test_pandas_dataframe_converters_multindex_error(
 def test_file_to_pandas_converter(
     csv_file_path: Path, pandas_dataframe: pd.DataFrame, column_subset: Union[List[str], None]
 ):
-    converter = FileToPandasConverter(columns_subset=column_subset)
+    converter = FileToPandasDataFrame(columns_subset=column_subset)
     results = converter.run(files=[str(csv_file_path)])
     if column_subset:
         pandas_dataframe = pandas_dataframe[column_subset]
@@ -115,14 +115,14 @@ def test_file_to_pandas_converter(
 
 def test_file_to_pandas_converter_read_kwargs(csv_file_path: Path, pandas_dataframe: pd.DataFrame):
     cols_to_select = ["content", "meta2"]
-    converter = FileToPandasConverter(read_kwargs={"usecols": cols_to_select})
+    converter = FileToPandasDataFrame(read_kwargs={"usecols": cols_to_select})
     results = converter.run(files=[str(csv_file_path)])
     assert_frame_equal(results["dataframe"], pandas_dataframe[cols_to_select])
 
 
 def test_file_to_pandas_converter_valueerror():
     with pytest.raises(ValueError):
-        FileToPandasConverter(file_format="foo")
+        FileToPandasDataFrame(file_format="foo")
 
 
 def test_converter_in_pipeline():
@@ -132,7 +132,7 @@ def test_converter_in_pipeline():
     from haystack.core.pipeline import Pipeline
 
     pipeline = Pipeline()
-    pipeline.add_component("file_to_pandas", FileToPandasConverter())
+    pipeline.add_component("file_to_pandas", FileToPandasDataFrame())
     pipeline.add_component("converter", PandasDataFrameConverter(content_column="content"))
     pipeline.add_component("cleaner", DocumentCleaner())
     pipeline.connect("file_to_pandas", "converter")

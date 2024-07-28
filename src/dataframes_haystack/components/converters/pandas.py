@@ -10,15 +10,15 @@ FileFormat = Literal["csv", "fwf", "json", "html", "xml", "excel", "feather", "p
 
 
 @component
-class FileToPandasConverter:
+class FileToPandasDataFrame:
     """
     Converts files to a pandas.DataFrame.
 
     Usage example:
     ```python
-    from dataframes_haystack.components.converters.pandas import FileToPandasConverter
+    from dataframes_haystack.components.converters.pandas import FileToPandasDataFrame
 
-    converter = FileToPandasConverter()
+    converter = FileToPandasDataFrame()
     results = converter.run(files=["file1.csv", "file2.csv"])
     df = results["dataframe"]
     print(df.head())
@@ -32,7 +32,7 @@ class FileToPandasConverter:
         columns_subset: Union[List[str], None] = None,
     ):
         """
-        Create a FileToPandasConverter component.
+        Create a FileToPandasDataFrame component.
 
         Please refer to the pandas documentation for more information on the supported readers and their parameters: https://pandas.pydata.org/docs/user_guide/io.html
 

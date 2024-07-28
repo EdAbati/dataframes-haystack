@@ -16,15 +16,15 @@ FileFormat = Literal["avro", "csv", "delta", "excel", "ipc", "json", "parquet"]
 
 
 @component
-class FileToPolarsConverter:
+class FileToPolarsDataFrame:
     """
     Converts files to a polars.DataFrame.
 
     Usage example:
     ```python
-    from dataframes_haystack.components.converters.polars import FileToPolarsConverter
+    from dataframes_haystack.components.converters.polars import FileToPolarsDataFrame
 
-    converter = FileToPolarsConverter()
+    converter = FileToPolarsDataFrame()
     results = converter.run(files=["file1.csv", "file2.csv"])
     df = results["dataframe"]
     print(df.head())
@@ -38,7 +38,7 @@ class FileToPolarsConverter:
         columns_subset: Union[List[str], None] = None,
     ):
         """
-        Create a FileToPolarsConverter component.
+        Create a FileToPolarsDataFrame component.
 
         Please refer to the polars documentation for more information on the supported readers and their parameters: https://docs.pola.rs/api/python/stable/reference/io.html
 
