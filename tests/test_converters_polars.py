@@ -160,7 +160,7 @@ def test_converter_in_pipeline():
             columns_subset: null
             file_format: csv
             read_kwargs: {}
-          type: dataframes_haystack.components.converters.polars.FileToPolarsConverter
+          type: dataframes_haystack.components.converters.polars.FileToPolarsDataFrame
     """
     assert dedent(converter_expected_yaml) in yaml_pipeline
     assert dedent(file_to_polars_expected_yaml) in yaml_pipeline

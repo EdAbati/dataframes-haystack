@@ -154,7 +154,7 @@ def test_converter_in_pipeline():
             columns_subset: null
             file_format: csv
             read_kwargs: {}
-          type: dataframes_haystack.components.converters.pandas.FileToPandasConverter
+          type: dataframes_haystack.components.converters.pandas.FileToPandasDataFrame
     """
     assert dedent(converter_expected_yaml) in yaml_pipeline
     assert dedent(file_to_pandas_expected_yaml) in yaml_pipeline
