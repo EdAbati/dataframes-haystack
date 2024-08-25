@@ -43,6 +43,7 @@ jobs:
 
     - name: Set uv path for hatch
       run: echo "HATCH_ENV_TYPE_VIRTUAL_UV_PATH=$(which uv)" >> $GITHUB_ENV
+      shell: bash
 
     - name: Install Hatch
       if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
