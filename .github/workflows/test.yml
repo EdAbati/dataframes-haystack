@@ -52,8 +52,9 @@ jobs:
     - name: Install Hatch
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        uv tool install --upgrade hatch
-        $env:PATH = "C:`\Users`\runneradmin`\.local`\bin;$env:PATH"
+        uv tool install --upgrade hatch \
+        PATH="$HOME/.local/bin:$PATH"
+      shell: bash
 
     # - name: Run mypy types checking
     #   run: hatch run types:check
