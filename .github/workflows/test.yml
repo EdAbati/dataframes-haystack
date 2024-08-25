@@ -45,7 +45,14 @@ jobs:
       run: echo "HATCH_ENV_TYPE_VIRTUAL_UV_PATH=$(which uv)" >> $GITHUB_ENV
 
     - name: Install Hatch
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
       run: uv tool install --upgrade hatch
+
+    - name: Install Hatch
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        uv tool install --upgrade hatch
+        $env:PATH = "C:`\Users`\runneradmin`\.local`\bin;$env:PATH"
 
     # - name: Run mypy types checking
     #   run: hatch run types:check
