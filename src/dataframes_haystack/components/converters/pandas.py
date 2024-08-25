@@ -4,10 +4,9 @@ from typing import Any, Dict, List, Optional, Union
 import narwhals.stable.v1 as nw
 import pandas as pd
 from haystack import Document, component, logging
-from haystack.components.converters.utils import normalize_metadata
 
 from dataframes_haystack.components.converters._common import PandasFileFormat as FileFormat
-from dataframes_haystack.components.converters._common import read_with_select
+from dataframes_haystack.components.converters._common import frame_to_documents, read_with_select
 
 logger = logging.getLogger(__name__)
 
@@ -166,24 +165,22 @@ class PandasDataFrameConverter:
                 "Please make sure that the index is not a MultiIndex or set `use_index_as_id` to False."
             )
             raise ValueError(msg)
-        index_col_name = "index"
 
-        meta_list = normalize_metadata(meta, sources_count=dataframe.shape[0])
-
-        selected_columns = [self.content_column, *self.meta_columns]
-
-        data_rows = dataframe[selected_columns].to_dict(orient="records")
         if self.use_index_as_id:
-            indexes = dataframe.index.to_list()
-            data_rows = [{index_col_name: str(idx), **row} for idx, row in zip(indexes, data_rows)]
+            index_col_name = "__temp_index_col__"
+            dataframe = dataframe.assign(**{index_col_name: dataframe.index.astype(str)})
+            selected_columns = [index_col_name, self.content_column, *self.meta_columns]
+        else:
+            index_col_name = None
+            selected_columns = [self.content_column, *self.meta_columns]
 
-        documents = []
-        for i, row in enumerate(data_rows):
-            doc_id = row.pop(index_col_name) if self.use_index_as_id else None
-            content = row.pop(self.content_column)
-            meta_row = {k: v for k, v in row.items() if k in self.meta_columns} if self.meta_columns else {}
-            metadata = {**meta_row, **meta_list[i]} if meta_list else meta_row
-            doc = Document(id=doc_id, content=content, meta=metadata)
-            documents.append(doc)
-
+        df = nw.from_native(dataframe, eager_only=True)
+        df = df.select(selected_columns)
+        documents = frame_to_documents(
+            df,
+            content_column=self.content_column,
+            meta_columns=self.meta_columns,
+            index_column=index_col_name,
+            extra_metadata=meta,
+        )
         return {"documents": documents}

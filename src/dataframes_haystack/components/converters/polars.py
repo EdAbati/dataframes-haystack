@@ -3,10 +3,9 @@ from typing import Any, Dict, List, Optional, Union
 
 import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
-from haystack.components.converters.utils import normalize_metadata
 
 from dataframes_haystack.components.converters._common import PolarsFileFormat as FileFormat
-from dataframes_haystack.components.converters._common import read_with_select
+from dataframes_haystack.components.converters._common import frame_to_documents, read_with_select
 
 try:
     import polars as pl
@@ -153,18 +152,15 @@ class PolarsDataFrameConverter:
             A dictionary with the following keys:
             - `documents`: Created Documents
         """
-        meta_list = normalize_metadata(meta, sources_count=dataframe.shape[0])
 
+        df = nw.from_native(dataframe)
         selected_columns = [self.index_column, self.content_column, *self.meta_columns]
-        data_rows = dataframe.select(selected_columns).to_dicts()
-
-        documents = []
-        for i, row in enumerate(data_rows):
-            doc_id = str(row.pop(self.index_column)) if self.index_column else None
-            content = row.pop(self.content_column)
-            meta_row = {k: v for k, v in row.items() if k in self.meta_columns} if self.meta_columns else {}
-            metadata = {**meta_row, **meta_list[i]} if meta_list else meta_row
-            doc = Document(id=doc_id, content=content, meta=metadata)
-            documents.append(doc)
-
+        df = df.select(selected_columns)
+        documents = frame_to_documents(
+            df,
+            content_column=self.content_column,
+            meta_columns=self.meta_columns,
+            index_column=self.index_column,
+            extra_metadata=meta,
+        )
         return {"documents": documents}
