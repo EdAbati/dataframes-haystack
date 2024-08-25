@@ -45,7 +45,7 @@ jobs:
       run: echo "HATCH_ENV_TYPE_VIRTUAL_UV_PATH=$(which uv)" >> $GITHUB_ENV
 
     - name: Install Hatch
-      run: uv pip install --upgrade hatch
+      run: uv tool install --upgrade hatch
 
     # - name: Run mypy types checking
     #   run: hatch run types:check
