@@ -53,5 +53,5 @@ jobs:
     #   run: hatch run types:check
 
     - name: Run unit tests
-      run: uv run --frozen hatch run test-cov-all
+      run: hatch run +py=${{ matrix.python-version }} test-cov-all
       shell: bash
