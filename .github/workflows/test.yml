@@ -44,18 +44,9 @@ jobs:
       shell: bash
 
     - name: Install Hatch
-      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
       run: uv tool install --upgrade hatch
-
-    - name: Install Hatch
-      if: ${{ matrix.os == 'windows-latest' }}
-      run: |
-        uv tool install --upgrade hatch
-      # PATH="$HOME/.local/bin:$PATH"
       shell: bash
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
     # - name: Run mypy types checking
     #   run: hatch run types:check
 
