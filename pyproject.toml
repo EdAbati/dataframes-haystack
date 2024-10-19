@@ -10,9 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
 keywords = ["nlp", "machine-learning", "ai", "haystack", "pandas", "dataframe", "polars", "llm"]
-authors = [
-  { name = "Edoardo Abati", email = "29585319+EdAbati@users.noreply.github.com" },
-]
+authors = [{ name = "Edoardo Abati" }]
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Development Status :: 4 - Beta",
@@ -45,6 +43,7 @@ path = "src/dataframes_haystack/__about__.py"
 
 # Default environment
 [tool.hatch.envs.default]
+installer="uv"
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",

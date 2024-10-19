@@ -13,6 +13,7 @@ concurrency:
 env:
   PYTHONUNBUFFERED: "1"
   FORCE_COLOR: "1"
+  UV_SYSTEM_PYTHON: "true"
 
 jobs:
   run:
@@ -32,11 +33,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
     - name: Install Hatch
-      run: pip install --upgrade hatch
+      run: uv tool install --upgrade hatch
+      shell: bash
 
     # - name: Run mypy types checking
     #   run: hatch run types:check
 
     - name: Run unit tests
       run: hatch run test-cov-all
+      shell: bash
