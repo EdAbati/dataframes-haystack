@@ -22,7 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows-latest]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
 
     steps:
@@ -50,9 +51,11 @@ jobs:
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
         uv tool install --upgrade hatch
-        PATH="$HOME/.local/bin:$PATH"
+      # PATH="$HOME/.local/bin:$PATH"
       shell: bash
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     # - name: Run mypy types checking
     #   run: hatch run types:check
 
