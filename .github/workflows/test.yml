@@ -53,5 +53,5 @@ jobs:
     #   run: hatch run types:check
 
     - name: Run unit tests
-      run: hatch run test-cov-all
+      run: uv run --frozen hatch run test-cov-all
       shell: bash
