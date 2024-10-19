@@ -39,7 +39,7 @@ jobs:
         version: "latest"
 
     - name: Install Python ${{ matrix.python-version }} with uv
-      run: uv python install ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }} --python-preference only-managed
 
     - name: Set uv path for hatch
       run: echo "HATCH_ENV_TYPE_VIRTUAL_UV_PATH=$(which uv)" >> $GITHUB_ENV
@@ -53,5 +53,5 @@ jobs:
     #   run: hatch run types:check
 
     - name: Run unit tests
-      run: hatch run +py=${{ matrix.python-version }} test-cov-all
+      run: hatch run test-cov-all
       shell: bash
