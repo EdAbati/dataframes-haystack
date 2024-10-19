@@ -13,6 +13,7 @@ concurrency:
 env:
   PYTHONUNBUFFERED: "1"
   FORCE_COLOR: "1"
+  UV_SYSTEM_PYTHON: "true"
 
 jobs:
   run:
