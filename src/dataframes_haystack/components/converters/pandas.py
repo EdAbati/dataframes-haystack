@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import narwhals.stable.v1 as nw
 import pandas as pd
@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 @component
 class FileToPandasDataFrame:
-    """
-    Converts files to a pandas.DataFrame.
+    """Converts files to a pandas.DataFrame.
 
     Usage example:
     ```python
@@ -32,9 +31,8 @@ class FileToPandasDataFrame:
         file_format: FileFormat = "csv",
         read_kwargs: Union[Dict[str, Any], None] = None,
         columns_subset: Union[List[str], None] = None,
-    ):
-        """
-        Create a FileToPandasDataFrame component.
+    ) -> None:
+        """Create a FileToPandasDataFrame component.
 
         Please refer to the pandas documentation for more information on the supported readers and their parameters: https://pandas.pydata.org/docs/user_guide/io.html
 
@@ -49,9 +47,8 @@ class FileToPandasDataFrame:
         self.read_kwargs = read_kwargs or {}
         self.columns_subset = columns_subset
 
-    def _get_read_function(self):
+    def _get_read_function(self) -> Callable[..., pd.DataFrame]:
         """Returns the function to read files based on the file format."""
-
         file_format_mapping = {
             "csv": pd.read_csv,
             "fwf": pd.read_fwf,
@@ -79,8 +76,7 @@ class FileToPandasDataFrame:
 
     @component.output_types(dataframe=pd.DataFrame)
     def run(self, file_paths: List[str]) -> Dict[str, pd.DataFrame]:
-        """
-        Converts files to a pandas.DataFrame.
+        """Converts files to a pandas.DataFrame.
 
         Args:
             file_paths: List of file paths.
@@ -97,8 +93,7 @@ class FileToPandasDataFrame:
 
 @component
 class PandasDataFrameConverter:
-    """
-    Converts data in a pandas.DataFrame to Documents.
+    """Converts data in a pandas.DataFrame to Documents.
 
     Usage example:
     ```python
@@ -115,10 +110,9 @@ class PandasDataFrameConverter:
         self,
         content_column: str,
         meta_columns: Optional[List[str]] = None,
-        use_index_as_id: bool = False,
-    ):
-        """
-        Create a PandasDataFrameConverter component.
+        use_index_as_id: bool = False,  # noqa: FBT001, FBT002
+    ) -> None:
+        """Create a PandasDataFrameConverter component.
 
         Args:
             content_column: The name of the column in the DataFrame that contains the text content.
@@ -131,19 +125,15 @@ class PandasDataFrameConverter:
 
     def _is_compatible_index(self, dataframe: pd.DataFrame) -> bool:
         """Returns True if the index of the DataFrame can be used as the ID of the Documents."""
-        if self.use_index_as_id:
-            if isinstance(dataframe.index, pd.MultiIndex):
-                return False
-        return True
+        return not (self.use_index_as_id and isinstance(dataframe.index, pd.MultiIndex))
 
     @component.output_types(documents=List[Document])
     def run(
         self,
         dataframe: pd.DataFrame,
         meta: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
-    ):
-        """
-        Converts text files to Documents.
+    ) -> Dict[str, List[Document]]:
+        """Converts text files to Documents.
 
         Args:
             dataframe:

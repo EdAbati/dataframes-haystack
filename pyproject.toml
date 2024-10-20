@@ -103,41 +103,23 @@ line-length = 120
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
-select = [
-  "A",
-  "ARG",
-  "B",
-  "C",
-  "DTZ",
-  "E",
-  "EM",
-  "F",
-  "I",
-  "ICN",
-  "ISC",
-  "N",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "Q",
-  "RUF",
-  "S",
-  "T",
-  "TID",
-  "UP",
-  "W",
-  "YTT",
-]
+select = ["ALL"]
 ignore = [
   # Allow non-abstract empty methods in abstract base classes
   "B027",
+  # No required doctstring for modules, packages
+  "D100",
+  "D104",
+  # No future annotations
+  "FA100",
   # Ignore checks for possible passwords
   "S105",
   "S106",
   "S107",
   # Ignore complexity
   "C901",
+  # Generic veriable name df is ok
+  "PD901",
   "PLR0911",
   "PLR0912",
   "PLR0913",
@@ -154,9 +136,16 @@ known-first-party = ["dataframes_haystack"]
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+docstring-code-format = true
+
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
-"tests/**/*" = ["PLR2004", "S101", "TID252"]
+"tests/*" = ["PLR2004", "S101", "TID252", "D100", "D103"]
+"notebooks/*" = ["PTH123", "SIM115"]
 
 
 # Test coverage

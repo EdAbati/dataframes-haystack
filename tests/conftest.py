@@ -16,13 +16,13 @@ content2,meta1_2,meta2_2
 """
 
 
-@pytest.fixture(scope="function")
-def pandas_dataframe():
+@pytest.fixture
+def pandas_dataframe() -> pd.DataFrame:
     return pd.DataFrame(data=DATA, index=[0, 1])
 
 
-@pytest.fixture(scope="function")
-def polars_dataframe():
+@pytest.fixture
+def polars_dataframe() -> pl.DataFrame:
     return pl.DataFrame(data=DATA)
 
 

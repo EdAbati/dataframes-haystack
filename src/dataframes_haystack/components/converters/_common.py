@@ -19,7 +19,9 @@ ReaderFunc = Callable[..., IntoDataFrame]
 
 
 def read_with_select(
-    reader_function: ReaderFunc, file_path: str, columns_subset: Union[List[str], None] = None
+    reader_function: ReaderFunc,
+    file_path: str,
+    columns_subset: Union[List[str], None] = None,
 ) -> nw.DataFrame:
     df = reader_function(file_path)
     df = nw.from_native(df, eager_only=True)
@@ -50,8 +52,7 @@ def frame_to_documents(
 
 @component
 class DataFrameFileToDocument:
-    """
-    Reads files and converts their data in Documents.
+    """Reads files and converts their data in Documents.
 
     Usage example:
     ```python
@@ -72,9 +73,8 @@ class DataFrameFileToDocument:
         file_format: FileFormat = "csv",
         read_kwargs: Optional[Dict[str, Any]] = None,
         backend: Backends = "polars",
-    ):
-        """
-        Create a DataFrameFileToDocument component.
+    ) -> None:
+        """Create a DataFrameFileToDocument component.
 
         Args:
             content_column: The name of the column in the DataFrame that contains the text content.
@@ -95,13 +95,12 @@ class DataFrameFileToDocument:
             raise ValueError(msg)
         self._reader_function = self._get_reader_function()
 
-    def _get_reader_function(self):
+    def _get_reader_function(self) -> Callable[..., IntoDataFrame]:
         if self.backend == "pandas":
             return self._get_reader_function_pandas()
-        elif self.backend == "polars":
-            return self._get_reader_function_polars()
+        return self._get_reader_function_polars()
 
-    def _get_reader_function_polars(self):
+    def _get_reader_function_polars(self) -> Callable[..., IntoDataFrame]:
         try:
             import polars as pl
         except ImportError as e:
@@ -123,7 +122,7 @@ class DataFrameFileToDocument:
         msg = f"Unsupported file format in polars: {self.file_format}"
         raise ValueError(msg)
 
-    def _get_reader_function_pandas(self):
+    def _get_reader_function_pandas(self) -> None:
         msg = "Pandas reader function not implemented yet"
         raise NotImplementedError(msg)
 
@@ -134,9 +133,12 @@ class DataFrameFileToDocument:
         return nw.concat(df_list, how="vertical")
 
     @component.output_types(documents=List[Document])
-    def run(self, file_paths: List[str], meta: Union[Dict[str, Any], List[Dict[str, Any]], None] = None):
-        """
-        Reads files and converts their data in Documents.
+    def run(
+        self,
+        file_paths: List[str],
+        meta: Union[Dict[str, Any], List[Dict[str, Any]], None] = None,
+    ) -> Dict[str, List[Document]]:
+        """Reads files and converts their data in Documents.
 
         Args:
             file_paths: List of file paths to read.

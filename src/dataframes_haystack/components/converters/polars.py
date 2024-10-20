@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 @component
 class FileToPolarsDataFrame:
-    """
-    Converts files to a polars.DataFrame.
+    """Converts files to a polars.DataFrame.
 
     Usage example:
     ```python
@@ -37,9 +36,8 @@ class FileToPolarsDataFrame:
         file_format: FileFormat = "csv",
         read_kwargs: Optional[Dict[str, Any]] = None,
         columns_subset: Union[List[str], None] = None,
-    ):
-        """
-        Create a FileToPolarsDataFrame component.
+    ) -> None:
+        """Create a FileToPolarsDataFrame component.
 
         Please refer to the polars documentation for more information on the supported readers and their parameters: https://docs.pola.rs/api/python/stable/reference/io.html
 
@@ -54,9 +52,8 @@ class FileToPolarsDataFrame:
         self.read_kwargs = read_kwargs or {}
         self.columns_subset = columns_subset
 
-    def _get_read_function(self):
+    def _get_read_function(self) -> Callable[..., pl.DataFrame]:
         """Returns the function to read files based on the file format."""
-
         file_format_mapping = {
             "avro": pl.read_avro,
             "csv": pl.read_csv,
@@ -78,9 +75,8 @@ class FileToPolarsDataFrame:
         return read_with_select(read_func, file_path, self.columns_subset)
 
     @component.output_types(dataframe=pl.DataFrame)
-    def run(self, file_paths: List[str]):
-        """
-        Converts files to a polars.DataFrame.
+    def run(self, file_paths: List[str]) -> Dict[str, pl.DataFrame]:
+        """Converts files to a polars.DataFrame.
 
         Args:
             file_paths: List of file paths to read.
@@ -97,8 +93,7 @@ class FileToPolarsDataFrame:
 
 @component
 class PolarsDataFrameConverter:
-    """
-    Converts data in a polars.DataFrame to Documents.
+    """Converts data in a polars.DataFrame to Documents.
 
     Usage example:
     ```python
@@ -116,9 +111,8 @@ class PolarsDataFrameConverter:
         content_column: str,
         meta_columns: Union[List[str], None] = None,
         index_column: Union[str, None] = None,
-    ):
-        """
-        Create a PolarsDataFrameConverter component.
+    ) -> None:
+        """Create a PolarsDataFrameConverter component.
 
         Args:
             content_column: The name of the column in the DataFrame that contains the text content.
@@ -134,9 +128,8 @@ class PolarsDataFrameConverter:
         self,
         dataframe: pl.DataFrame,
         meta: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
-    ):
-        """
-        Converts data in a polars.DataFrame to Documents.
+    ) -> Dict[str, List[Document]]:
+        """Converts data in a polars.DataFrame to Documents.
 
         Args:
             dataframe:
@@ -152,7 +145,6 @@ class PolarsDataFrameConverter:
             A dictionary with the following keys:
             - `documents`: Created Documents
         """
-
         df = nw.from_native(dataframe)
         selected_columns = [self.index_column, self.content_column, *self.meta_columns]
         df = df.select(selected_columns)
