@@ -5,8 +5,12 @@ import narwhals.stable.v1 as nw
 import pandas as pd
 from haystack import Document, component, logging
 
-from dataframes_haystack.components.converters._common import PandasFileFormat as FileFormat
-from dataframes_haystack.components.converters._common import frame_to_documents, read_with_select
+from dataframes_haystack.components.converters._utils import PandasFileFormat as FileFormat
+from dataframes_haystack.components.converters._utils import (
+    frame_to_documents,
+    get_pandas_readers_map,
+    read_with_select,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,20 +53,7 @@ class FileToPandasDataFrame:
 
     def _get_read_function(self) -> Callable[..., pd.DataFrame]:
         """Returns the function to read files based on the file format."""
-        file_format_mapping = {
-            "csv": pd.read_csv,
-            "fwf": pd.read_fwf,
-            "json": pd.read_json,
-            "html": pd.read_html,
-            "xml": pd.read_xml,
-            "excel": pd.read_excel,
-            "feather": pd.read_feather,
-            "parquet": pd.read_parquet,
-            "orc": pd.read_orc,
-            "pickle": pd.read_pickle,
-            "sql": pd.read_sql,
-            "gbq": pd.read_gbq,
-        }
+        file_format_mapping = get_pandas_readers_map()
         reader_function = file_format_mapping.get(self.file_format)
         if reader_function:
             return reader_function

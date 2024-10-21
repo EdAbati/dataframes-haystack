@@ -4,8 +4,12 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
 
-from dataframes_haystack.components.converters._common import PolarsFileFormat as FileFormat
-from dataframes_haystack.components.converters._common import frame_to_documents, read_with_select
+from dataframes_haystack.components.converters._utils import PolarsFileFormat as FileFormat
+from dataframes_haystack.components.converters._utils import (
+    frame_to_documents,
+    get_polars_readers_map,
+    read_with_select,
+)
 
 try:
     import polars as pl
@@ -54,15 +58,7 @@ class FileToPolarsDataFrame:
 
     def _get_read_function(self) -> Callable[..., pl.DataFrame]:
         """Returns the function to read files based on the file format."""
-        file_format_mapping = {
-            "avro": pl.read_avro,
-            "csv": pl.read_csv,
-            "delta": pl.read_delta,
-            "excel": pl.read_excel,
-            "ipc": pl.read_ipc,
-            "json": pl.read_json,
-            "parquet": pl.read_parquet,
-        }
+        file_format_mapping = get_polars_readers_map()
         reader_function = file_format_mapping.get(self.file_format)
         if reader_function:
             return reader_function

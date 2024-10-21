@@ -9,7 +9,16 @@ description = "Haystack custom components for your favourite dataframe library."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
-keywords = ["nlp", "machine-learning", "ai", "haystack", "pandas", "dataframe", "polars", "llm"]
+keywords = [
+  "nlp",
+  "machine-learning",
+  "ai",
+  "haystack",
+  "pandas",
+  "dataframe",
+  "polars",
+  "llm",
+]
 authors = [{ name = "Edoardo Abati" }]
 classifiers = [
   "License :: OSI Approved :: MIT License",
@@ -27,7 +36,7 @@ classifiers = [
 dependencies = [
   "haystack-ai>=2.0.0",
   "narwhals>=1.1.0",
-  "typing_extensions"
+  "typing_extensions",
 ]
 [project.optional-dependencies]
 polars = ["polars>=0.18.0"]
@@ -43,7 +52,7 @@ path = "src/dataframes_haystack/__about__.py"
 
 # Default environment
 [tool.hatch.envs.default]
-installer="uv"
+installer = "uv"
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
@@ -89,8 +98,17 @@ check = "mypy --install-types --non-interactive {args:src/dataframes_haystack te
 detached = true
 dependencies = ["black>=24.3.0", "nbqa>=1.8.5", "ruff>=0.3.4"]
 [tool.hatch.envs.lint.scripts]
-style = ["ruff check {args:.}", "black --check --diff {args:.}", "nbqa black --check --diff notebooks/*"]
-fmt = ["black {args:.}", "ruff check --fix {args:.}", "nbqa black notebooks/*", "style"]
+style = [
+  "ruff check {args:.}",
+  "black --check --diff {args:.}",
+  "nbqa black --check --diff notebooks/*",
+]
+fmt = [
+  "black {args:.}",
+  "ruff check --fix {args:.}",
+  "nbqa black notebooks/*",
+  "style",
+]
 
 [tool.black]
 target-version = ["py38"]
@@ -125,10 +143,6 @@ ignore = [
   "PLR0913",
   "PLR0915",
 ]
-unfixable = [
-  # Don't touch unused imports
-  "F401",
-]
 
 [tool.ruff.lint.isort]
 known-first-party = ["dataframes_haystack"]
@@ -158,7 +172,10 @@ omit = [
 ]
 
 [tool.coverage.paths]
-dataframes_haystack = ["src/dataframes_haystack", "*/dataframes-haystack/src/dataframes_haystack"]
+dataframes_haystack = [
+  "src/dataframes_haystack",
+  "*/dataframes-haystack/src/dataframes_haystack",
+]
 tests = ["tests", "*/dataframes-haystack/tests"]
 
 [tool.coverage.report]
