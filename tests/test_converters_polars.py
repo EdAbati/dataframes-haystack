@@ -9,17 +9,6 @@ from dataframes_haystack.components.converters.polars import FileToPolarsDataFra
 from tests.utils import assert_pipeline_yaml_equal
 
 
-@pytest.fixture
-def polars_dataframe() -> pl.DataFrame:
-    return pl.DataFrame(
-        data={
-            "content": ["content1", "content2"],
-            "meta1": ["meta1_1", "meta1_2"],
-            "meta2": ["meta2_1", "meta2_2"],
-        },
-    )
-
-
 def test_polars_dataframe_default_converter(polars_dataframe: pl.DataFrame) -> None:
     converter = PolarsDataFrameConverter(content_column="content")
     results = converter.run(dataframe=polars_dataframe)
