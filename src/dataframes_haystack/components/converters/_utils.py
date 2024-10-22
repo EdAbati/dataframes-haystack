@@ -44,7 +44,7 @@ def frame_to_documents(
     return documents
 
 
-def get_polars_readers_map() -> Dict[str, ReaderFunc]:
+def get_polars_readers_map() -> Dict[str, ReaderFunc]:  # pragma: no cover
     try:
         import polars as pl
     except ImportError as e:
@@ -62,7 +62,7 @@ def get_polars_readers_map() -> Dict[str, ReaderFunc]:
     }
 
 
-def get_pandas_readers_map() -> Dict[str, ReaderFunc]:
+def get_pandas_readers_map() -> Dict[str, ReaderFunc]:  # pragma: no cover
     import pandas as pd
 
     return {
