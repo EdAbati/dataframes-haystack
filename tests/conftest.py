@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import polars as pl
 import pytest
+from narwhals.typing import IntoDataFrame
 
 DATA = {
     "content": ["content1", "content2"],
@@ -16,14 +17,27 @@ content2,meta1_2,meta2_2
 """
 
 
-@pytest.fixture(scope="function")
-def pandas_dataframe():
+def _pandas_df() -> pd.DataFrame:
     return pd.DataFrame(data=DATA, index=[0, 1])
 
 
-@pytest.fixture(scope="function")
-def polars_dataframe():
+def _polars_df() -> pl.DataFrame:
     return pl.DataFrame(data=DATA)
+
+
+@pytest.fixture
+def pandas_dataframe() -> pd.DataFrame:
+    return _pandas_df()
+
+
+@pytest.fixture
+def polars_dataframe() -> pl.DataFrame:
+    return _polars_df()
+
+
+@pytest.fixture(params=[_pandas_df, _polars_df])
+def dataframe(request: pytest.FixtureRequest) -> IntoDataFrame:
+    return request.param()
 
 
 @pytest.fixture(scope="session")

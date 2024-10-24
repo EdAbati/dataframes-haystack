@@ -1,7 +1,15 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from functools import partial
+from typing import Any, Callable, Dict, List, Optional, Union
 
+import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
-from haystack.components.converters.utils import normalize_metadata
+
+from dataframes_haystack.components.converters._utils import PolarsFileFormat as FileFormat
+from dataframes_haystack.components.converters._utils import (
+    frame_to_documents,
+    get_polars_readers_map,
+    read_with_select,
+)
 
 try:
     import polars as pl
@@ -12,13 +20,9 @@ except ImportError as e:
 logger = logging.getLogger(__name__)
 
 
-FileFormat = Literal["avro", "csv", "delta", "excel", "ipc", "json", "parquet"]
-
-
 @component
 class FileToPolarsDataFrame:
-    """
-    Converts files to a polars.DataFrame.
+    """Converts files to a polars.DataFrame.
 
     Usage example:
     ```python
@@ -36,9 +40,8 @@ class FileToPolarsDataFrame:
         file_format: FileFormat = "csv",
         read_kwargs: Optional[Dict[str, Any]] = None,
         columns_subset: Union[List[str], None] = None,
-    ):
-        """
-        Create a FileToPolarsDataFrame component.
+    ) -> None:
+        """Create a FileToPolarsDataFrame component.
 
         Please refer to the polars documentation for more information on the supported readers and their parameters: https://docs.pola.rs/api/python/stable/reference/io.html
 
@@ -53,35 +56,23 @@ class FileToPolarsDataFrame:
         self.read_kwargs = read_kwargs or {}
         self.columns_subset = columns_subset
 
-    def _get_read_function(self):
+    def _get_read_function(self) -> Callable[..., pl.DataFrame]:
         """Returns the function to read files based on the file format."""
-
-        file_format_mapping = {
-            "avro": pl.read_avro,
-            "csv": pl.read_csv,
-            "delta": pl.read_delta,
-            "excel": pl.read_excel,
-            "ipc": pl.read_ipc,
-            "json": pl.read_json,
-            "parquet": pl.read_parquet,
-        }
+        file_format_mapping = get_polars_readers_map()
         reader_function = file_format_mapping.get(self.file_format)
         if reader_function:
             return reader_function
         msg = f"Unsupported file format: {self.file_format}"
         raise ValueError(msg)
 
-    def _read_with_select(self, file_path: str) -> pl.DataFrame:
+    def _read_with_select(self, file_path: str) -> nw.DataFrame:
         """Reads a file and selects only the specified columns."""
-        df = self._reader_function(file_path, **self.read_kwargs)
-        if self.columns_subset:
-            return df.select(self.columns_subset)
-        return df
+        read_func = partial(self._reader_function, **self.read_kwargs)
+        return read_with_select(read_func, file_path, self.columns_subset)
 
     @component.output_types(dataframe=pl.DataFrame)
-    def run(self, file_paths: List[str]):
-        """
-        Converts files to a polars.DataFrame.
+    def run(self, file_paths: List[str]) -> Dict[str, pl.DataFrame]:
+        """Converts files to a polars.DataFrame.
 
         Args:
             file_paths: List of file paths to read.
@@ -91,14 +82,14 @@ class FileToPolarsDataFrame:
             - `dataframe`: The polars.DataFrame created from the files.
         """
         df_list = [self._read_with_select(path) for path in file_paths]
-        df = pl.concat(df_list, how="vertical")
-        return {"dataframe": df}
+        df = nw.concat(df_list, how="vertical")
+        polars_df = nw.to_native(df)
+        return {"dataframe": polars_df}
 
 
 @component
 class PolarsDataFrameConverter:
-    """
-    Converts data in a polars.DataFrame to Documents.
+    """Converts data in a polars.DataFrame to Documents.
 
     Usage example:
     ```python
@@ -116,9 +107,8 @@ class PolarsDataFrameConverter:
         content_column: str,
         meta_columns: Union[List[str], None] = None,
         index_column: Union[str, None] = None,
-    ):
-        """
-        Create a PolarsDataFrameConverter component.
+    ) -> None:
+        """Create a PolarsDataFrameConverter component.
 
         Args:
             content_column: The name of the column in the DataFrame that contains the text content.
@@ -134,9 +124,8 @@ class PolarsDataFrameConverter:
         self,
         dataframe: pl.DataFrame,
         meta: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
-    ):
-        """
-        Converts data in a polars.DataFrame to Documents.
+    ) -> Dict[str, List[Document]]:
+        """Converts data in a polars.DataFrame to Documents.
 
         Args:
             dataframe:
@@ -152,18 +141,15 @@ class PolarsDataFrameConverter:
             A dictionary with the following keys:
             - `documents`: Created Documents
         """
-        meta_list = normalize_metadata(meta, sources_count=dataframe.shape[0])
-
+        df = nw.from_native(dataframe)
         selected_columns = [self.index_column, self.content_column, *self.meta_columns]
-        data_rows = dataframe.select(selected_columns).to_dicts()
-
-        documents = []
-        for i, row in enumerate(data_rows):
-            doc_id = str(row.pop(self.index_column)) if self.index_column else None
-            content = row.pop(self.content_column)
-            meta_row = {k: v for k, v in row.items() if k in self.meta_columns} if self.meta_columns else {}
-            metadata = {**meta_row, **meta_list[i]} if meta_list else meta_row
-            doc = Document(id=doc_id, content=content, meta=metadata)
-            documents.append(doc)
-
+        selected_columns = [col for col in selected_columns if col is not None]
+        df = df.select(selected_columns)
+        documents = frame_to_documents(
+            df,
+            content_column=self.content_column,
+            meta_columns=self.meta_columns,
+            index_column=self.index_column,
+            extra_metadata=meta,
+        )
         return {"documents": documents}

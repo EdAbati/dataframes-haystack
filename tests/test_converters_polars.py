@@ -9,18 +9,7 @@ from dataframes_haystack.components.converters.polars import FileToPolarsDataFra
 from tests.utils import assert_pipeline_yaml_equal
 
 
-@pytest.fixture(scope="function")
-def polars_dataframe():
-    return pl.DataFrame(
-        data={
-            "content": ["content1", "content2"],
-            "meta1": ["meta1_1", "meta1_2"],
-            "meta2": ["meta2_1", "meta2_2"],
-        },
-    )
-
-
-def test_polars_dataframe_default_converter(polars_dataframe: pl.DataFrame):
+def test_polars_dataframe_default_converter(polars_dataframe: pl.DataFrame) -> None:
     converter = PolarsDataFrameConverter(content_column="content")
     results = converter.run(dataframe=polars_dataframe)
     documents = results["documents"]
@@ -31,7 +20,7 @@ def test_polars_dataframe_default_converter(polars_dataframe: pl.DataFrame):
     assert [doc.embedding for doc in documents] == [None, None]
 
 
-def test_polars_dataframe_converter_index_column(polars_dataframe: pl.DataFrame):
+def test_polars_dataframe_converter_index_column(polars_dataframe: pl.DataFrame) -> None:
     polars_dataframe = polars_dataframe.with_columns(pl.Series("index", [0, 1]))
     converter = PolarsDataFrameConverter(content_column="content", index_column="index")
     results = converter.run(dataframe=polars_dataframe)
@@ -42,7 +31,7 @@ def test_polars_dataframe_converter_index_column(polars_dataframe: pl.DataFrame)
 
 
 @pytest.mark.parametrize(
-    "meta_columns, expected_meta",
+    ("meta_columns", "expected_meta"),
     [
         (["meta1"], [{"meta1": "meta1_1"}, {"meta1": "meta1_2"}]),
         (["meta2"], [{"meta2": "meta2_1"}, {"meta2": "meta2_2"}]),
@@ -59,7 +48,7 @@ def test_polars_dataframe_converter_meta_columns(
     polars_dataframe: pl.DataFrame,
     meta_columns: List[str],
     expected_meta: List[Dict[str, str]],
-):
+) -> None:
     converter = PolarsDataFrameConverter(content_column="content", meta_columns=meta_columns)
     results = converter.run(dataframe=polars_dataframe)
     documents = results["documents"]
@@ -69,7 +58,7 @@ def test_polars_dataframe_converter_meta_columns(
 
 
 @pytest.mark.parametrize(
-    "meta, expected_meta",
+    ("meta", "expected_meta"),
     [
         (
             [{"extra_meta_1": "value1"}, {"extra_meta_2": "value2"}],
@@ -99,7 +88,7 @@ def test_polars_dataframe_converter_all_metadata(
     polars_dataframe: pl.DataFrame,
     meta: Union[Dict[str, Any], List[Dict[str, Any]]],
     expected_meta: List[Dict[str, str]],
-):
+) -> None:
     converter = PolarsDataFrameConverter(content_column="content", meta_columns=["meta1"])
     results = converter.run(dataframe=polars_dataframe, meta=meta)
     documents = results["documents"]
@@ -110,8 +99,10 @@ def test_polars_dataframe_converter_all_metadata(
 
 @pytest.mark.parametrize("column_subset", [None, ["content"], ["content", "meta1"]])
 def test_file_to_polars_converter(
-    csv_file_path: Path, polars_dataframe: pl.DataFrame, column_subset: Union[List[str], None]
-):
+    csv_file_path: Path,
+    polars_dataframe: pl.DataFrame,
+    column_subset: Union[List[str], None],
+) -> None:
     converter = FileToPolarsDataFrame(columns_subset=column_subset)
     results = converter.run(file_paths=[str(csv_file_path)])
     if column_subset:
@@ -119,19 +110,19 @@ def test_file_to_polars_converter(
     assert_frame_equal(results["dataframe"], polars_dataframe)
 
 
-def test_file_to_polars_converter_read_kwargs(csv_file_path: Path, polars_dataframe: pl.DataFrame):
+def test_file_to_polars_converter_read_kwargs(csv_file_path: Path, polars_dataframe: pl.DataFrame) -> None:
     cols_to_select = ["content", "meta2"]
     converter = FileToPolarsDataFrame(read_kwargs={"columns": cols_to_select})
     results = converter.run(file_paths=[str(csv_file_path)])
     assert_frame_equal(results["dataframe"], polars_dataframe.select(cols_to_select))
 
 
-def test_file_to_polars_converter_valueerror():
-    with pytest.raises(ValueError):
+def test_file_to_polars_converter_valueerror() -> None:
+    with pytest.raises(ValueError, match="Unsupported file format"):
         FileToPolarsDataFrame(file_format="foo")
 
 
-def test_converter_in_pipeline():
+def test_converter_in_pipeline() -> None:
     from textwrap import dedent
 
     from haystack.components.preprocessors import DocumentCleaner

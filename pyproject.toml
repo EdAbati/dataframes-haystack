@@ -9,7 +9,16 @@ description = "Haystack custom components for your favourite dataframe library."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
-keywords = ["nlp", "machine-learning", "ai", "haystack", "pandas", "dataframe", "polars", "llm"]
+keywords = [
+  "nlp",
+  "machine-learning",
+  "ai",
+  "haystack",
+  "pandas",
+  "dataframe",
+  "polars",
+  "llm",
+]
 authors = [{ name = "Edoardo Abati" }]
 classifiers = [
   "License :: OSI Approved :: MIT License",
@@ -26,6 +35,7 @@ classifiers = [
 
 dependencies = [
   "haystack-ai>=2.0.0",
+  "narwhals>=1.1.0",
   "typing_extensions",
 ]
 [project.optional-dependencies]
@@ -42,7 +52,7 @@ path = "src/dataframes_haystack/__about__.py"
 
 # Default environment
 [tool.hatch.envs.default]
-installer="uv"
+installer = "uv"
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
@@ -88,8 +98,17 @@ check = "mypy --install-types --non-interactive {args:src/dataframes_haystack te
 detached = true
 dependencies = ["black>=24.3.0", "nbqa>=1.8.5", "ruff>=0.3.4"]
 [tool.hatch.envs.lint.scripts]
-style = ["ruff check {args:.}", "black --check --diff {args:.}", "nbqa black --check --diff notebooks/*"]
-fmt = ["black {args:.}", "ruff check --fix {args:.}", "nbqa black notebooks/*", "style"]
+style = [
+  "ruff check {args:.}",
+  "black --check --diff {args:.}",
+  "nbqa black --check --diff notebooks/*",
+]
+fmt = [
+  "black {args:.}",
+  "ruff check --fix {args:.}",
+  "nbqa black notebooks/*",
+  "style",
+]
 
 [tool.black]
 target-version = ["py38"]
@@ -102,49 +121,27 @@ line-length = 120
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
-select = [
-  "A",
-  "ARG",
-  "B",
-  "C",
-  "DTZ",
-  "E",
-  "EM",
-  "F",
-  "I",
-  "ICN",
-  "ISC",
-  "N",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "Q",
-  "RUF",
-  "S",
-  "T",
-  "TID",
-  "UP",
-  "W",
-  "YTT",
-]
+select = ["ALL"]
 ignore = [
   # Allow non-abstract empty methods in abstract base classes
   "B027",
+  # No required doctstring for modules, packages
+  "D100",
+  "D104",
+  # No future annotations
+  "FA100",
   # Ignore checks for possible passwords
   "S105",
   "S106",
   "S107",
   # Ignore complexity
   "C901",
+  # Generic veriable name df is ok
+  "PD901",
   "PLR0911",
   "PLR0912",
   "PLR0913",
   "PLR0915",
-]
-unfixable = [
-  # Don't touch unused imports
-  "F401",
 ]
 
 [tool.ruff.lint.isort]
@@ -153,9 +150,16 @@ known-first-party = ["dataframes_haystack"]
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+docstring-code-format = true
+
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
-"tests/**/*" = ["PLR2004", "S101", "TID252"]
+"tests/*" = ["PLR2004", "S101", "TID252", "D100", "D103"]
+"notebooks/*" = ["PTH123", "SIM115"]
 
 
 # Test coverage
@@ -168,7 +172,10 @@ omit = [
 ]
 
 [tool.coverage.paths]
-dataframes_haystack = ["src/dataframes_haystack", "*/dataframes-haystack/src/dataframes_haystack"]
+dataframes_haystack = [
+  "src/dataframes_haystack",
+  "*/dataframes-haystack/src/dataframes_haystack",
+]
 tests = ["tests", "*/dataframes-haystack/tests"]
 
 [tool.coverage.report]
