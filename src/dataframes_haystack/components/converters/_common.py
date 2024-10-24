@@ -27,7 +27,7 @@ class DataFrameFileToDocument:
     ```python
     from dataframes_haystack.components.converters import DataFrameFileToDocument
 
-    converter = DataFrameFileToDocument()
+    converter = DataFrameFileToDocument(content_column="text_str")
     results = converter.run(files=["file1.csv", "file2.csv"])
     documents = results["documents"]
     print(documents[0].content)

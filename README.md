@@ -22,8 +22,13 @@ The dataframe libraries currently supported are:
 - [Polars](https://pola.rs)
 
 The library offers various custom [Converters](https://docs.haystack.deepset.ai/docs/converters) components to transform dataframes into Haystack [`Document`](https://docs.haystack.deepset.ai/docs/data-classes#document) objects:
+- `DataFrameFileToDocument` is a main generic converter that reads files using a dataframe backend and converts them into `Document` objects.
 - `FileToPandasDataFrame` and `FileToPolarsDataFrame` read files and convert them into dataframes.
 - `PandasDataFrameConverter` or `PolarsDataFrameConverter` convert data stored in dataframes into Haystack `Document`objects.
+
+`dataframes-haystack` supports reading files in various formats:
+- _csv_, _json_, _parquet_, _excel_, _html_, _xml_, _orc_, _pickle_, _fixed-width format_ for `pandas`. See the [pandas documentation](https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html) for more details.
+- _csv_, _json_, _parquet_, _excel_, _avro_, _delta_, _ipc_ for `polars`. See the [polars documentation](https://docs.pola.rs/api/python/stable/reference/io.html) for more details.
 
 ## 🛠️ Installation
 
@@ -40,7 +45,30 @@ pip install "dataframes-haystack[polars]"
 > [!TIP]
 > See the [Example Notebooks](./notebooks) for complete examples.
 
+## DataFrameFileToDocument
+
+[Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/dataframe-file-to-doc-example.ipynb)
+
+You can leverage both `pandas` and `polars` backends (thanks to [`narwhals`](https://github.com/narwhals-dev/narwhals)) to read your data!
+
+```python
+from dataframes_haystack.components.converters import DataFrameFileToDocument
+
+converter = DataFrameFileToDocument(content_column="text_str")
+documents = converter.run(files=["file1.csv", "file2.csv"])
+```
+
+```python
+>>> documents
+{'documents': [
+    Document(id=0, content: 'Hello world', meta: {}),
+    Document(id=1, content: 'Hello everyone', meta: {})
+]}
+```
+
 ### Pandas
+
+[Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/pandas-example.ipynb)
 
 #### FileToPandasDataFrame
 
@@ -86,6 +114,8 @@ Result:
 ```
 
 ### Polars
+
+[Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/polars-example.ipynb)
 
 #### FileToPolarsDataFrame
 
