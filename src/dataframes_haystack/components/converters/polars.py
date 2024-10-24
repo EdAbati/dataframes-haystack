@@ -143,6 +143,7 @@ class PolarsDataFrameConverter:
         """
         df = nw.from_native(dataframe)
         selected_columns = [self.index_column, self.content_column, *self.meta_columns]
+        selected_columns = [col for col in selected_columns if col is not None]
         df = df.select(selected_columns)
         documents = frame_to_documents(
             df,

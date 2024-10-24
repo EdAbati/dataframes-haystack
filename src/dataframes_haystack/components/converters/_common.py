@@ -46,9 +46,9 @@ class DataFrameFileToDocument:
         """Create a DataFrameFileToDocument component.
 
         Args:
-            content_column: The name of the column in the DataFrame that contains the text content.
-            meta_columns: Optional list of column names in the DataFrame that contain metadata.
-            index_column: The name of the column in the DataFrame that contains the index.
+            content_column: The name of the DataFrame column that contains the text content.
+            meta_columns: Optional list of names of the DataFrame columns that contain metadata.
+            index_column: The name of the DataFrame column that contains the index.
             file_format: The format of the files to read.
             read_kwargs: Optional keyword arguments to pass to the file reader function.
             backend: The backend to use for reading the files.
@@ -74,6 +74,7 @@ class DataFrameFileToDocument:
 
     def _run_read(self, file_paths: List[str]) -> nw.DataFrame:
         selected_columns = [self.index_column, self.content_column, *self.meta_columns]
+        selected_columns = [col for col in selected_columns if col is not None]
         read_func = partial(self._reader_function, **self.read_kwargs)
         df_list = [read_with_select(read_func, file_path=path, columns_subset=selected_columns) for path in file_paths]
         return nw.concat(df_list, how="vertical")
