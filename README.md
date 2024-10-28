@@ -13,6 +13,21 @@
 
 -----
 
+## Contents
+
+- [📃 Description](#description)
+- [🛠️ Installation](#installation)
+- [💻 Usage](#usage)
+  - [DataFrameFileToDocument](#dataframefiletodocument)
+  - [Pandas](#pandas)
+    - [FileToPandasDataFrame](#filetopandasdataframe)
+    - [PandasDataFrameConverter](#pandasdataframeconverter)
+  - [Polars](#polars)
+    - [FileToPolarsDataFrame](#filetopolarsdataframe)
+    - [PolarsDataFrameConverter](#polarsdataframeconverter)
+
+-----
+
 ## 📃 Description
 
 `dataframes-haystack` is an extension for [Haystack 2](https://docs.haystack.deepset.ai/docs/intro) that enables integration with dataframe libraries.
@@ -45,7 +60,7 @@ pip install "dataframes-haystack[polars]"
 > [!TIP]
 > See the [Example Notebooks](./notebooks) for complete examples.
 
-## DataFrameFileToDocument
+### DataFrameFileToDocument
 
 [Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/dataframe-file-to-doc-example.ipynb)
 
