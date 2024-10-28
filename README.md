@@ -17,10 +17,10 @@
 - [🛠️ Installation](#installation)
 - [💻 Usage](#usage)
   - [DataFrameFileToDocument](#dataframefiletodocument)
-  - [Pandas](#pandas)
+  - [`pandas` Converters](#pandas-converters)
     - [FileToPandasDataFrame](#filetopandasdataframe)
     - [PandasDataFrameConverter](#pandasdataframeconverter)
-  - [Polars](#polars)
+  - [`polars` Converters](#polars-converters)
     - [FileToPolarsDataFrame](#filetopolarsdataframe)
     - [PolarsDataFrameConverter](#polarsdataframeconverter)
 
@@ -79,7 +79,7 @@ documents = converter.run(files=["file1.csv", "file2.csv"])
 ]}
 ```
 
-### Pandas
+### `pandas` Converters
 
 [Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/pandas-example.ipynb)
 
@@ -126,7 +126,7 @@ Result:
 ]}
 ```
 
-### Polars
+### `polars` Converters
 
 [Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/polars-example.ipynb)
 
