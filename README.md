@@ -13,6 +13,20 @@
 
 -----
 
+- [📃 Description](#description)
+- [🛠️ Installation](#installation)
+- [💻 Usage](#usage)
+  - [DataFrameFileToDocument](#dataframefiletodocument)
+  - [`pandas` Converters](#pandas-converters)
+    - [FileToPandasDataFrame](#filetopandasdataframe)
+    - [PandasDataFrameConverter](#pandasdataframeconverter)
+  - [`polars` Converters](#polars-converters)
+    - [FileToPolarsDataFrame](#filetopolarsdataframe)
+    - [PolarsDataFrameConverter](#polarsdataframeconverter)
+- [🤝 Contributing](#contributing)
+
+-----
+
 ## 📃 Description
 
 `dataframes-haystack` is an extension for [Haystack 2](https://docs.haystack.deepset.ai/docs/intro) that enables integration with dataframe libraries.
@@ -45,7 +59,7 @@ pip install "dataframes-haystack[polars]"
 > [!TIP]
 > See the [Example Notebooks](./notebooks) for complete examples.
 
-## DataFrameFileToDocument
+### DataFrameFileToDocument
 
 [Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/dataframe-file-to-doc-example.ipynb)
 
@@ -66,7 +80,7 @@ documents = converter.run(files=["file1.csv", "file2.csv"])
 ]}
 ```
 
-### Pandas
+### `pandas` Converters
 
 [Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/pandas-example.ipynb)
 
@@ -113,7 +127,7 @@ Result:
 ]}
 ```
 
-### Polars
+### `polars` Converters
 
 [Complete example](https://github.com/EdAbati/dataframes-haystack/blob/main/notebooks/polars-example.ipynb)
 
