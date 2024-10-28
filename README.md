@@ -23,6 +23,7 @@
   - [`polars` Converters](#polars-converters)
     - [FileToPolarsDataFrame](#filetopolarsdataframe)
     - [PolarsDataFrameConverter](#polarsdataframeconverter)
+- [🤝 Contributing](#contributing)
 
 -----
 
