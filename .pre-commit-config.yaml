@@ -26,12 +26,12 @@ repos:
       - id: black
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.1
+    rev: v0.8.0
     hooks:
       - id: ruff
         args: ["--fix"]
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.8.7
+    rev: 1.9.1
     hooks:
       - id: nbqa-black
