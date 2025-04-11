@@ -39,6 +39,7 @@ dependencies = [
   "typing_extensions",
 ]
 [project.optional-dependencies]
+pandas = ["pandas>=1.0.0"]
 polars = ["polars>=0.18.0"]
 
 [project.urls]
@@ -57,7 +58,7 @@ dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
 ]
-features = ["polars"]
+features = ["pandas", "polars"]
 python = "3.8" # This is the minimum supported version
 
 [tool.hatch.envs.default.scripts]
