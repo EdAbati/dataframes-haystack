@@ -47,8 +47,8 @@ The library offers various custom [Converters](https://docs.haystack.deepset.ai/
 ## 🛠️ Installation
 
 ```sh
-# for pandas (pandas is already included in `haystack-ai`)
-pip install dataframes-haystack
+# for pandas
+pip install "dataframes-haystack[pandas]"
 
 # for polars
 pip install "dataframes-haystack[polars]"
