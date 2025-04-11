@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import pandas as pd
 import pytest
@@ -53,8 +53,8 @@ def test_pandas_dataframe_converter_use_index_as_id(
 )
 def test_pandas_dataframe_converter_meta_columns(
     pandas_dataframe: pd.DataFrame,
-    meta_columns: List[str],
-    expected_meta: List[Dict[str, str]],
+    meta_columns: list[str],
+    expected_meta: list[dict[str, str]],
 ) -> None:
     converter = PandasDataFrameConverter(content_column="content", meta_columns=meta_columns)
     results = converter.run(dataframe=pandas_dataframe)
@@ -85,8 +85,8 @@ def test_pandas_dataframe_converter_meta_columns(
 )
 def test_pandas_dataframe_converter_all_metadata(
     pandas_dataframe: pd.DataFrame,
-    meta: Union[Dict[str, Any], List[Dict[str, Any]]],
-    expected_meta: List[Dict[str, str]],
+    meta: Union[dict[str, Any], list[dict[str, Any]]],
+    expected_meta: list[dict[str, str]],
 ) -> None:
     converter = PandasDataFrameConverter(content_column="content", meta_columns=["meta1"])
     results = converter.run(dataframe=pandas_dataframe, meta=meta)
@@ -109,7 +109,7 @@ def test_pandas_dataframe_converters_multindex_error(
 def test_file_to_pandas_converter(
     csv_file_path: Path,
     pandas_dataframe: pd.DataFrame,
-    column_subset: Union[List[str], None],
+    column_subset: Union[list[str], None],
 ) -> None:
     converter = FileToPandasDataFrame(columns_subset=column_subset)
     results = converter.run(file_paths=[str(csv_file_path)])

@@ -7,7 +7,7 @@ name = "dataframes-haystack"
 dynamic = ["version"]
 description = "Haystack custom components for your favourite dataframe library."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { file = "LICENSE" }
 keywords = [
   "nlp",
@@ -24,7 +24,6 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -72,7 +71,7 @@ features = ["pandas", "polars"]
 post-install-commands = ["uv pip freeze"]
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.12", "3.11", "3.10", "3.9", "3.8"]
+python = ["3.12", "3.11", "3.10", "3.9"]
 
 [tool.hatch.envs.hatch-test.scripts]
 run = "pytest{env:HATCH_TEST_ARGS:} {args}"
@@ -141,12 +140,12 @@ lint-fix = "ruff check --fix {args:.}"
 
 # Format/Linting Tools
 [tool.black]
-target-version = ["py38"]
+target-version = ["py39"]
 line-length = 120
 skip-string-normalization = true
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 line-length = 120
 extend-include = ["*.ipynb"]
 

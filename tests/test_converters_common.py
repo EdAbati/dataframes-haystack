@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import pytest
 from haystack import Document
@@ -53,10 +53,10 @@ from tests.utils import assert_pipeline_yaml_equal
 )
 def test_dataframe_file_to_document(
     csv_file_path: Path,
-    meta_columns: Union[List[str], None],
+    meta_columns: Union[list[str], None],
     index_column: Union[str, None],
-    read_kwargs: Union[Dict[str, Any], None],
-    expected_docs: List[Document],
+    read_kwargs: Union[dict[str, Any], None],
+    expected_docs: list[Document],
     backend: str,
 ) -> None:
     if backend == "pandas" and read_kwargs and read_kwargs.get("n_rows"):
@@ -85,7 +85,7 @@ def test_dataframe_file_to_document(
         ({"backend": "polars", "file_format": "foo"}, "Unsupported file format for polars backend: foo"),
     ],
 )
-def test_dataframe_file_to_document_valueerror(kwargs: Dict[str, Any], error_msg: str) -> None:
+def test_dataframe_file_to_document_valueerror(kwargs: dict[str, Any], error_msg: str) -> None:
     with pytest.raises(ValueError, match=error_msg):
         DataFrameFileToDocument(content_column="a", **kwargs)
 
