@@ -38,6 +38,7 @@ dependencies = [
   "narwhals>=1.1.0",
   "typing_extensions",
 ]
+
 [project.optional-dependencies]
 pandas = ["pandas>=1.0.0"]
 polars = ["polars>=0.18.0"]
@@ -59,23 +60,50 @@ dependencies = [
   "pytest",
 ]
 features = ["pandas", "polars"]
-python = "3.8" # This is the minimum supported version
 
-[tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
+# Unit tests
+[tool.hatch.envs.hatch-test]
+installer = "uv"
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
 ]
-test-cov-all = [
-  "test-cov",
-  "cov-report",
+features = ["pandas", "polars"]
+post-install-commands = ["uv pip freeze"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.12", "3.11", "3.10", "3.9", "3.8"]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "coverage run -m pytest{env:HATCH_TEST_ARGS:} {args}"
+cov-combine = "coverage combine"
+cov-report = "coverage report"
+
+[tool.coverage.run]
+source_pkgs = ["dataframes_haystack", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/dataframes_haystack/__about__.py",
 ]
 
-[[tool.hatch.envs.all.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+[tool.coverage.paths]
+dataframes_haystack = [
+  "src/dataframes_haystack",
+  "*/dataframes-haystack/src/dataframes_haystack",
+]
+tests = ["tests", "*/dataframes-haystack/tests"]
 
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+
+# Documentation
 [tool.hatch.envs.docs]
 dependencies = [
   "notebook",
@@ -95,22 +123,23 @@ check = "mypy --install-types --non-interactive {args:src/dataframes_haystack te
 
 
 # Linting
-[tool.hatch.envs.lint]
-detached = true
-dependencies = ["black>=24.3.0", "nbqa>=1.8.5", "ruff>=0.3.4"]
-[tool.hatch.envs.lint.scripts]
-style = [
-  "ruff check {args:.}",
+[tool.hatch.envs.hatch-static-analysis]
+dependencies = ["black>=24.10.0", "nbqa>=1.9.1", "ruff>=0.8.0"]
+
+[tool.hatch.envs.hatch-static-analysis.scripts]
+format-check = [
   "black --check --diff {args:.}",
   "nbqa black --check --diff notebooks/*",
 ]
-fmt = [
+format-fix = [
   "black {args:.}",
-  "ruff check --fix {args:.}",
   "nbqa black notebooks/*",
-  "style",
 ]
+lint-check = "ruff check {args:.}"
+lint-fix = "ruff check --fix {args:.}"
 
+
+# Format/Linting Tools
 [tool.black]
 target-version = ["py38"]
 line-length = 120
@@ -161,27 +190,3 @@ docstring-code-format = true
 # Tests can use magic values, assertions, and relative imports
 "tests/*" = ["PLR2004", "S101", "TID252", "D100", "D103"]
 "notebooks/*" = ["PTH123", "SIM115"]
-
-
-# Test coverage
-[tool.coverage.run]
-source_pkgs = ["dataframes_haystack", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/dataframes_haystack/__about__.py",
-]
-
-[tool.coverage.paths]
-dataframes_haystack = [
-  "src/dataframes_haystack",
-  "*/dataframes-haystack/src/dataframes_haystack",
-]
-tests = ["tests", "*/dataframes-haystack/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
