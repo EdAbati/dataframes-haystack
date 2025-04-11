@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import narwhals.stable.v1 as nw
 import pandas as pd
@@ -33,8 +33,8 @@ class FileToPandasDataFrame:
     def __init__(
         self,
         file_format: FileFormat = "csv",
-        read_kwargs: Union[Dict[str, Any], None] = None,
-        columns_subset: Union[List[str], None] = None,
+        read_kwargs: Union[dict[str, Any], None] = None,
+        columns_subset: Union[list[str], None] = None,
     ) -> None:
         """Create a FileToPandasDataFrame component.
 
@@ -66,7 +66,7 @@ class FileToPandasDataFrame:
         return read_with_select(read_func, file_path, self.columns_subset)
 
     @component.output_types(dataframe=pd.DataFrame)
-    def run(self, file_paths: List[str]) -> Dict[str, pd.DataFrame]:
+    def run(self, file_paths: list[str]) -> dict[str, pd.DataFrame]:
         """Converts files to a pandas.DataFrame.
 
         Args:
@@ -100,7 +100,7 @@ class PandasDataFrameConverter:
     def __init__(
         self,
         content_column: str,
-        meta_columns: Optional[List[str]] = None,
+        meta_columns: Optional[list[str]] = None,
         use_index_as_id: bool = False,  # noqa: FBT001, FBT002
     ) -> None:
         """Create a PandasDataFrameConverter component.
@@ -118,12 +118,12 @@ class PandasDataFrameConverter:
         """Returns True if the index of the DataFrame can be used as the ID of the Documents."""
         return not (self.use_index_as_id and isinstance(dataframe.index, pd.MultiIndex))
 
-    @component.output_types(documents=List[Document])
+    @component.output_types(documents=list[Document])
     def run(
         self,
         dataframe: pd.DataFrame,
-        meta: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
-    ) -> Dict[str, List[Document]]:
+        meta: Optional[Union[dict[str, Any], list[dict[str, Any]]]] = None,
+    ) -> dict[str, list[Document]]:
         """Converts text files to Documents.
 
         Args:

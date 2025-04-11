@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import polars as pl
 import pytest
@@ -46,8 +46,8 @@ def test_polars_dataframe_converter_index_column(polars_dataframe: pl.DataFrame)
 )
 def test_polars_dataframe_converter_meta_columns(
     polars_dataframe: pl.DataFrame,
-    meta_columns: List[str],
-    expected_meta: List[Dict[str, str]],
+    meta_columns: list[str],
+    expected_meta: list[dict[str, str]],
 ) -> None:
     converter = PolarsDataFrameConverter(content_column="content", meta_columns=meta_columns)
     results = converter.run(dataframe=polars_dataframe)
@@ -86,8 +86,8 @@ def test_polars_dataframe_converter_meta_columns(
 )
 def test_polars_dataframe_converter_all_metadata(
     polars_dataframe: pl.DataFrame,
-    meta: Union[Dict[str, Any], List[Dict[str, Any]]],
-    expected_meta: List[Dict[str, str]],
+    meta: Union[dict[str, Any], list[dict[str, Any]]],
+    expected_meta: list[dict[str, str]],
 ) -> None:
     converter = PolarsDataFrameConverter(content_column="content", meta_columns=["meta1"])
     results = converter.run(dataframe=polars_dataframe, meta=meta)
@@ -101,7 +101,7 @@ def test_polars_dataframe_converter_all_metadata(
 def test_file_to_polars_converter(
     csv_file_path: Path,
     polars_dataframe: pl.DataFrame,
-    column_subset: Union[List[str], None],
+    column_subset: Union[list[str], None],
 ) -> None:
     converter = FileToPolarsDataFrame(columns_subset=column_subset)
     results = converter.run(file_paths=[str(csv_file_path)])

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import narwhals as nw
 import pandas as pd
@@ -79,10 +79,10 @@ def test_read_with_select_subset(reader_func: ReaderFunc, csv_file_path: Path) -
 )
 def test_frame_to_documents(
     dataframe: IntoDataFrame,
-    meta_columns: Union[List[str], None],
+    meta_columns: Union[list[str], None],
     index_column: Union[str, None],
-    extra_metadata: Union[Dict[str, Any], List[Dict[str, Any]], None],
-    expected_docs: List[Document],
+    extra_metadata: Union[dict[str, Any], list[dict[str, Any]], None],
+    expected_docs: list[Document],
 ) -> None:
     documents = frame_to_documents(
         nw.from_native(dataframe),

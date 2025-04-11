@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import narwhals.stable.v1 as nw
 from haystack import Document, component, logging
@@ -38,8 +38,8 @@ class FileToPolarsDataFrame:
     def __init__(
         self,
         file_format: FileFormat = "csv",
-        read_kwargs: Optional[Dict[str, Any]] = None,
-        columns_subset: Union[List[str], None] = None,
+        read_kwargs: Optional[dict[str, Any]] = None,
+        columns_subset: Union[list[str], None] = None,
     ) -> None:
         """Create a FileToPolarsDataFrame component.
 
@@ -71,7 +71,7 @@ class FileToPolarsDataFrame:
         return read_with_select(read_func, file_path, self.columns_subset)
 
     @component.output_types(dataframe=pl.DataFrame)
-    def run(self, file_paths: List[str]) -> Dict[str, pl.DataFrame]:
+    def run(self, file_paths: list[str]) -> dict[str, pl.DataFrame]:
         """Converts files to a polars.DataFrame.
 
         Args:
@@ -105,7 +105,7 @@ class PolarsDataFrameConverter:
     def __init__(
         self,
         content_column: str,
-        meta_columns: Union[List[str], None] = None,
+        meta_columns: Union[list[str], None] = None,
         index_column: Union[str, None] = None,
     ) -> None:
         """Create a PolarsDataFrameConverter component.
@@ -119,12 +119,12 @@ class PolarsDataFrameConverter:
         self.meta_columns = meta_columns or []
         self.index_column = index_column
 
-    @component.output_types(documents=List[Document])
+    @component.output_types(documents=list[Document])
     def run(
         self,
         dataframe: pl.DataFrame,
-        meta: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
-    ) -> Dict[str, List[Document]]:
+        meta: Optional[Union[dict[str, Any], list[dict[str, Any]]]] = None,
+    ) -> dict[str, list[Document]]:
         """Converts data in a polars.DataFrame to Documents.
 
         Args:

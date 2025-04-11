@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Literal, Union
+from typing import Any, Callable, Literal, Union
 
 import narwhals.stable.v1 as nw
 from haystack import Document
@@ -15,7 +15,7 @@ FileFormat = Union[PandasFileFormat, PolarsFileFormat]
 def read_with_select(
     reader_function: ReaderFunc,
     file_path: str,
-    columns_subset: Union[List[str], None] = None,
+    columns_subset: Union[list[str], None] = None,
 ) -> nw.DataFrame:
     df = reader_function(file_path)
     df = nw.from_native(df, eager_only=True)
@@ -28,10 +28,10 @@ def frame_to_documents(
     df: nw.DataFrame,
     *,
     content_column: str,
-    meta_columns: Union[List[str], None] = None,
+    meta_columns: Union[list[str], None] = None,
     index_column: Union[str, None] = None,
-    extra_metadata: Union[Dict[str, Any], List[Dict[str, Any]], None] = None,
-) -> List[Document]:
+    extra_metadata: Union[dict[str, Any], list[dict[str, Any]], None] = None,
+) -> list[Document]:
     meta_list = normalize_metadata(extra_metadata, sources_count=df.shape[0])
     documents = []
     for i, row in enumerate(df.iter_rows(named=True)):
@@ -44,7 +44,7 @@ def frame_to_documents(
     return documents
 
 
-def get_polars_readers_map() -> Dict[str, ReaderFunc]:  # pragma: no cover
+def get_polars_readers_map() -> dict[str, ReaderFunc]:  # pragma: no cover
     try:
         import polars as pl
     except ImportError as e:
@@ -62,7 +62,7 @@ def get_polars_readers_map() -> Dict[str, ReaderFunc]:  # pragma: no cover
     }
 
 
-def get_pandas_readers_map() -> Dict[str, ReaderFunc]:  # pragma: no cover
+def get_pandas_readers_map() -> dict[str, ReaderFunc]:  # pragma: no cover
     import pandas as pd
 
     return {

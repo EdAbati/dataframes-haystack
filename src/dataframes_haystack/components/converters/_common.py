@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import narwhals.stable.v1 as nw
 from haystack import Document, component
@@ -36,11 +36,12 @@ class DataFrameFileToDocument:
 
     def __init__(
         self,
+        *,
         content_column: str,
-        meta_columns: Union[List[str], None] = None,
+        meta_columns: Union[list[str], None] = None,
         index_column: Union[str, None] = None,
         file_format: FileFormat = "csv",
-        read_kwargs: Optional[Dict[str, Any]] = None,
+        read_kwargs: Optional[dict[str, Any]] = None,
         backend: Backends = "polars",
     ) -> None:
         """Create a DataFrameFileToDocument component.
@@ -72,19 +73,19 @@ class DataFrameFileToDocument:
         msg = f"Unsupported file format for {self.backend} backend: {self.file_format}"
         raise ValueError(msg)
 
-    def _run_read(self, file_paths: List[str]) -> nw.DataFrame:
+    def _run_read(self, file_paths: list[str]) -> nw.DataFrame:
         selected_columns = [self.index_column, self.content_column, *self.meta_columns]
         selected_columns = [col for col in selected_columns if col is not None]
         read_func = partial(self._reader_function, **self.read_kwargs)
         df_list = [read_with_select(read_func, file_path=path, columns_subset=selected_columns) for path in file_paths]
         return nw.concat(df_list, how="vertical")
 
-    @component.output_types(documents=List[Document])
+    @component.output_types(documents=list[Document])
     def run(
         self,
-        file_paths: List[str],
-        meta: Union[Dict[str, Any], List[Dict[str, Any]], None] = None,
-    ) -> Dict[str, List[Document]]:
+        file_paths: list[str],
+        meta: Union[dict[str, Any], list[dict[str, Any]], None] = None,
+    ) -> dict[str, list[Document]]:
         """Reads files and converts their data in Documents.
 
         Args:
